@@ -8,12 +8,6 @@ import master.Globals;
 
 public class MBotSteuerung {
 
-	/*
-	 * Bluetooth Addresses of mBots: mBot1: 000502031DD3 mBot2: mBot3:
-	 */
-
-	// Bluetooth Addresses for mBots
-	private static String[] bluetoothAddresses = new String[] { "000502031DD3", "Dummy", "Dummy" };
 	// Array with mBot-Object References
 	private static MBot[] mBots = new MBot[] { null, null, null };
 	// Current State of FlowControl
@@ -24,7 +18,7 @@ public class MBotSteuerung {
 	// Array Index of mBot currently used by player 2.
 	private static int Spieler2_mBotIndex = 0;
 
-	// Gibt die skalierte Geschwindigkeit zurück.
+	// Gibt die skalierte Geschwindigkeit zurueck.
 	private static int getSpeed(int joystickValue, int deadzonePos, int deadzoneNeg, int minMotorSpeedPos,
 			int minMotorSpeedNeg) {
 		int speed;
@@ -52,7 +46,7 @@ public class MBotSteuerung {
 		return speed;
 	}
 
-	// Gibt die Bewegungsrichtung zurück
+	// Gibt die Bewegungsrichtung zurueck
 	private static MotorDirection getDirection(int joystickValueL, int joystickValueR) {
 		MotorDirection direction;
 		if (joystickValueL > 0) {
@@ -94,7 +88,7 @@ public class MBotSteuerung {
 		// mBot von Spieler1 soll Box suchen
 		mBots[mBot1].sendCommand(States.LINE_SEARCH, 200, 200, MotorDirection.FORWARD);
 		// Warten bis mBot von Spieler1 bei Box ist
-		while (!IOHandler.ladeBoxen_TorSensoren[mBot1]) {
+		while (!IOHandler.ladeBoxen_SensorTor) {
 			try {
 				TimeUnit.MILLISECONDS.sleep(20);
 			} catch (InterruptedException e) {
@@ -123,7 +117,7 @@ public class MBotSteuerung {
 		// mBot von Spieler2 soll Box suchen
 		mBots[mBot2].sendCommand(States.LINE_SEARCH, 200, 200, MotorDirection.FORWARD);
 		// Warten bis mBot von Spieler2 bei Box ist
-		while (!IOHandler.ladeBoxen_TorSensoren[mBot2]) {
+		while (!IOHandler.ladeBoxen_SensorTor) {
 			try {
 				TimeUnit.MILLISECONDS.sleep(100);
 			} catch (InterruptedException e) {
@@ -208,7 +202,7 @@ public class MBotSteuerung {
 		}
 	}
 
-	// SSendet die KOmmandos während dem Spiel
+	// SSendet die KOmmandos waehrend dem Spiel
 	private static void spielSendCommands(int mBot1, int mBot2) {
 		// Speed of Left Motor for player 1
 		int Sp1SpeedL = getSpeed(IOHandler.spieler1_JoystickL, 32, 32, 60, 60);
@@ -231,8 +225,8 @@ public class MBotSteuerung {
 
 	// Oeffnet alle Verbindungen zu den mBots
 	public static void init() {
-		for (int i = 0; i < mBots.length && i < bluetoothAddresses.length; i++) {
-			mBots[i] = new MBot(bluetoothAddresses[i]);
+		for (int i = 0; i < mBots.length && i < Globals.mBotAddresses.length; i++) {
+			mBots[i] = new MBot(Globals.mBotAddresses[i]);
 			mBots[i].synch();
 			mBots[i].sendCommand(States.STOP, 0, 0, MotorDirection.STOP);
 		}
@@ -249,7 +243,7 @@ public class MBotSteuerung {
 				mBots[i].synch();
 			}
 		}
-		// Zustandsmaschine für mBotSteuerung
+		// Zustandsmaschine fuer mBotSteuerung
 		switch (zustand) {
 		case STOP:
 			if (Globals.ausparken) {

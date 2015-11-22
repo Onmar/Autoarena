@@ -3,6 +3,8 @@ package mBot;
 import java.awt.*;
 import javax.swing.*;
 
+import master.Globals;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.charset.Charset;
@@ -12,11 +14,10 @@ public class MBotTestWithGUI {
     private JFrame frame;
     /*
      * Bluetooth Addresses of mBots: 
-     * mBot1: 000502031DD3 
-     * mBot2: 
-     * mBot3:
+     * mBot1: 00:05:02:03:1D:D3 
+     * mBot2: 00:0D:19:03:06:E7
+     * mBot3: 00:0D:19:00:0B:08
      */
-    private static String[] bluetoothAddresses = new String[] { "000502031DD3", "Dummy", "Dummy" };
     private static MBot[] mBots = new MBot[] { null, null, null };
 
     /**
@@ -24,8 +25,8 @@ public class MBotTestWithGUI {
      */
     public static void main(String[] args) {
     	System.out.println(Charset.defaultCharset().name());
-        for (int i = 0; i < mBots.length && i < bluetoothAddresses.length; i++) {
-            mBots[i] = new MBot(bluetoothAddresses[i]);
+        for (int i = 0; i < mBots.length && i < Globals.mBotAddresses.length; i++) {
+            mBots[i] = new MBot(Globals.mBotAddresses[i]);
             mBots[i].synch();
         }
         EventQueue.invokeLater(new Runnable() {

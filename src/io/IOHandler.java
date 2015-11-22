@@ -48,8 +48,8 @@ public class IOHandler {
 	// LadeBoxen
 	public static boolean ladeBoxen_MotorL; // To the Left in - Direction
 	public static boolean ladeBoxen_MotorR; // To the Right in + Direction
-	public static boolean[] ladeBoxen_TorSensoren = new boolean[] { false, false, false };
-	public static boolean[] ladeBoxen_Sensoren = new boolean[] { false, false, false };
+	public static boolean ladeBoxen_SensorTor = false; // Robot at the door
+	public static boolean[] ladeBoxen_Sensoren = new boolean[] { false, false, false }; // Robot in Box
 
 	private static LagerPosition ladeBoxen_SollPosition = LagerPosition.TOR;
 	private static LagerPosition ladeBoxen_MomentanePosition = LagerPosition.UNKNOWN;
@@ -235,6 +235,16 @@ public class IOHandler {
 				}
 			});
 			ladeBoxen_Sensoren[2].setDebounce(50);
+			
+			// ladeBoxen_SensorTor
+			final GpioPinDigitalInput ladeBoxen_SensorTor = gpio.provisionDigitalInputPin(RaspiPin.GPIO_11, PinPullResistance.PULL_DOWN);
+			ladeBoxen_SensorTor.addListener(new GpioPinListenerDigital() {
+				@Override
+				public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
+					IOHandler.ladeBoxen_SensorTor = event.getState().isHigh();
+				}
+			});
+			ladeBoxen_SensorTor.setDebounce(50);
 		}
 
 		{

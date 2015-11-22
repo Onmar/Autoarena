@@ -153,7 +153,11 @@ public class Scoreboard {
 		window.setVisible(true);
 	}
 	
+	public void setVisible(boolean visibility) {
+		this.window.setVisible(visibility);
+	}
+	
 	public void closeWindow() {
-		window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
+		this.window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
 	}
 }

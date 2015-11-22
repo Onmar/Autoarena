@@ -16,7 +16,8 @@ public class MBot {
 			if (!bluetoothAddress.equals("Dummy")) {
 				connected = serialConn.connect("Makeblock", bluetoothAddress);
 			} else {
-				System.out.println("mBot init cancelled because of \"Dummy\" name.");
+				System.out
+						.println("mBot init cancelled because of \"Dummy\" name.");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -28,9 +29,12 @@ public class MBot {
 		if (!connected) {
 			try {
 				if (!bluetoothAddress.equals("Dummy")) {
-					connected = serialConn.connect("Makeblock", bluetoothAddress);
+					this.disconnect();
+					connected = serialConn.connect("Makeblock",
+							bluetoothAddress);
 				} else {
-					System.out.println("mBot connect cancelled because of \"Dummy\" name.");
+					System.out
+							.println("mBot connect cancelled because of \"Dummy\" name.");
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -41,13 +45,11 @@ public class MBot {
 	}
 
 	public void disconnect() {
-		if (connected) {
-			try {
-				serialConn.disconnect();
-				connected = false;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			serialConn.disconnect();
+			connected = false;
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -73,7 +75,8 @@ public class MBot {
 		}
 	}
 
-	public void sendCommand(States state, int lSpeed, int rSpeed, MotorDirection direction) {
+	public void sendCommand(States state, int lSpeed, int rSpeed,
+			MotorDirection direction) {
 		if (connected) {
 			// char[] command = new char[] { (char) state.ordinal(), (char)
 			// rSpeed, (char) lSpeed,

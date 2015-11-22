@@ -20,5 +20,7 @@ public class Globals {
     public static boolean mBotDisconnected = false;
     
     public static boolean stop = false;
+    
+    public static final String[] mBotAddresses = new String[] { "000502031DD3", "000D190306E7", "000D19000B08" };
 
 }

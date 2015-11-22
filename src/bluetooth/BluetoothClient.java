@@ -155,7 +155,7 @@ public class BluetoothClient implements DiscoveryListener {
 
     public boolean isConnected() {
     	if(remoteDevice != null) {
-    		return pWriter.checkError();
+    		return !pWriter.checkError();
     	} else {
     		return false;
     	}
