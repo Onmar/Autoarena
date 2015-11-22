@@ -12,6 +12,10 @@ public class Ablaufsteuerung {
     private static ZustaendeBall zustandBall = ZustaendeBall.KEIN_BALL;
     private static long lastMilis;
     
+    public static ZustaendeSpiel getGameState() {
+    	return zustandSpiel;
+    }
+    
     private static void laufendesSpiel() {
         switch (zustandBall) {
         case KEIN_BALL:

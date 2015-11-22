@@ -12,7 +12,7 @@ public enum Colors {
 			new Color(255, 255, 255),
 			new Color(255, 51, 51),
 			new Color(0, 204, 0),
-			new Color(0, 0, 204)
+			new Color(51, 51, 255)
 	};
 	
 	private Colors(int index) {

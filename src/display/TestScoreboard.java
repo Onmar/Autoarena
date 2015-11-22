@@ -3,34 +3,23 @@ package display;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JTextField;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.concurrent.TimeUnit;
+
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Timer;
 
 import master.Globals;
 
-import java.awt.Font;
-import java.awt.Color;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
 public class TestScoreboard {
 
-	private int height = 576;
-	private int width = 720;
-
-	// Window
-	private JFrame window = new JFrame();
-	// Panes
-	private JPanel Pane_Spieler2 = new JPanel();
-	private JPanel Pane_Spieler1 = new JPanel();
-	private JPanel Pane_General = new JPanel();
-	// Labels
-	private JLabel titelSpieler1 = new JLabel("Spieler 1");
-	private JLabel toreSpieler1 = new JLabel("<Tor1>");
-	private JLabel titelSpieler2 = new JLabel("Spieler 2");
-	private JLabel toreSpieler2 = new JLabel("<Tor2>");
-	private JLabel spielzeit = new JLabel("<Spielzeit>");
+	private JFrame frame;
 
 	/**
 	 * Launch the application.
@@ -40,17 +29,21 @@ public class TestScoreboard {
 			public void run() {
 				try {
 					TestScoreboard window = new TestScoreboard();
-					window.window.setVisible(true);
+					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
-		
-		while(!Globals.stop) {
-			
-		}
-		
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Scoreboard window = new Scoreboard();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	/**
@@ -64,68 +57,97 @@ public class TestScoreboard {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		// Create Window
-		window.setTitle("GUI for Car Arena");
-		window.setBounds(0, 0, width + 2 * 9, height + 9 + 40);
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.getContentPane().setLayout(null);
-		window.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e) {
-				Globals.stop = true;
+		frame = new JFrame();
+		frame.setBounds(100, 100, 400, 150);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JPanel panel = new JPanel();
+		frame.getContentPane().add(panel, BorderLayout.NORTH);
+		
+		JButton btnAddPlayer1Score = new JButton("Add Player1 Score");
+		btnAddPlayer1Score.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Globals.toreSpieler1++;
+            }
+        });
+		panel.add(btnAddPlayer1Score);
+		
+		JButton btnAddPlayer2Score = new JButton("AddPlayer2 Score");
+		btnAddPlayer2Score.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Globals.toreSpieler2++;
+            }
+        });
+		panel.add(btnAddPlayer2Score);
+		
+		JPanel panel_1 = new JPanel();
+		frame.getContentPane().add(panel_1, BorderLayout.SOUTH);
+		
+		final JComboBox player1_Color = new JComboBox();
+		player1_Color.setMaximumRowCount(4);
+		player1_Color.setModel(new DefaultComboBoxModel(new String[] {"White", "Red", "Green", "Blue"}));
+		player1_Color.setSelectedIndex(0);
+		panel_1.add(player1_Color);
+		// ComboBox to select the current mBot.
+        player1_Color.setModel(new DefaultComboBoxModel<String>(new String[] {"White", "Red", "Green", "Blue"}));
+        player1_Color.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Globals.mBotSpieler1 = Colors.values()[player1_Color.getSelectedIndex()];
+            }
+        });
+		
+		final JComboBox player2_Color = new JComboBox();
+		player2_Color.setModel(new DefaultComboBoxModel(new String[] {"White", "Red", "Green", "Blue"}));
+		player2_Color.setSelectedIndex(0);
+		player2_Color.setMaximumRowCount(4);
+		panel_1.add(player2_Color);
+		player2_Color.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Globals.mBotSpieler2 = Colors.values()[player2_Color.getSelectedIndex()];
+            }
+        });
+		
+		JPanel panel_2 = new JPanel();
+		frame.getContentPane().add(panel_2, BorderLayout.CENTER);
+		
+		JButton btnStartGame = new JButton("Start Game");
+		panel_2.add(btnStartGame);
+		btnStartGame.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Globals.spielLaeuft = true;
+            }
+        });
+		
+		JButton btnPauseGame = new JButton("Pause Game");
+		panel_2.add(btnPauseGame);
+		btnPauseGame.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Globals.spielLaeuft = false;
+            }
+        });
+		
+		JButton btnResetGame = new JButton("Reset Game");
+		panel_2.add(btnResetGame);
+		btnResetGame.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Globals.spielLaeuft = false;
+                Globals.spielzeit = 0;
+            }
+        });
+		
+		
+		ActionListener update = new ActionListener() {
+			private long lastCycle = System.currentTimeMillis();
+			
+			public void actionPerformed(ActionEvent event) {
+				if(Globals.spielLaeuft) {
+					Globals.spielzeit += System.currentTimeMillis() - lastCycle;
+				}
+				lastCycle = System.currentTimeMillis();
 			}
-		});
-
-		// Create Pane for Player1
-		Pane_Spieler1.setBackground(Colors.getColor(Colors.WHITE));
-		Pane_Spieler1.setBounds(0, 0, width / 2, height / 4 * 3);
-		window.getContentPane().add(Pane_Spieler1);
-		Pane_Spieler1.setLayout(null);
-
-		// Create Title for Player1
-		titelSpieler1.setFont(new Font("Tahoma", Font.PLAIN, height / 4 - 60));
-		titelSpieler1.setBounds(0, 0, width / 2, height / 4);
-		titelSpieler1.setVerticalAlignment(SwingConstants.CENTER);
-		titelSpieler1.setHorizontalAlignment(SwingConstants.CENTER);
-		Pane_Spieler1.add(titelSpieler1);
-
-		// Create Goal-Count for Player1
-		toreSpieler1.setFont(new Font("Tahoma", Font.PLAIN, height / 2 - 120));
-		toreSpieler1.setBounds(0, height / 4 + 1, width / 2, height / 2);
-		toreSpieler1.setVerticalAlignment(SwingConstants.CENTER);
-		toreSpieler1.setHorizontalAlignment(SwingConstants.CENTER);
-		Pane_Spieler1.add(toreSpieler1);
-
-		// Create Pane for Player2
-		Pane_Spieler2.setLayout(null);
-		Pane_Spieler2.setBackground(Colors.getColor(Colors.WHITE));
-		Pane_Spieler2.setBounds(width / 2 + 1, 0, width / 2, height / 4 * 3);
-		window.getContentPane().add(Pane_Spieler2);
-
-		// Create Title for Player2
-		titelSpieler2.setFont(new Font("Tahoma", Font.PLAIN, height / 4 - 60));
-		titelSpieler2.setBounds(0, 0, width / 2, height / 4);
-		titelSpieler2.setVerticalAlignment(SwingConstants.CENTER);
-		titelSpieler2.setHorizontalAlignment(SwingConstants.CENTER);
-		Pane_Spieler2.add(titelSpieler2);
-
-		// Create Goal-Count for Player2
-		toreSpieler2.setFont(new Font("Tahoma", Font.PLAIN, height / 2 - 120));
-		toreSpieler2.setBounds(0, height / 4 + 1, width / 2, height / 2);
-		toreSpieler2.setVerticalAlignment(SwingConstants.CENTER);
-		toreSpieler2.setHorizontalAlignment(SwingConstants.CENTER);
-		Pane_Spieler2.add(toreSpieler2);
-
-		// Create Pane for Play-Time
-		Pane_General.setBackground(Colors.getColor(Colors.WHITE));
-		Pane_General.setBounds(0, height / 4 * 3 + 1, width, height / 4);
-		window.getContentPane().add(Pane_General);
-		Pane_General.setLayout(null);
-
-		// Create Label for Play-Time
-		spielzeit.setFont(new Font("Tahoma", Font.PLAIN, height / 4 - 60));
-		spielzeit.setBounds(0, 0, width, height / 4);
-		spielzeit.setVerticalAlignment(SwingConstants.CENTER);
-		spielzeit.setHorizontalAlignment(SwingConstants.CENTER);
-		Pane_General.add(spielzeit);
+		};
+		Timer updateTimer = new Timer(50, update);
+		updateTimer.start();
 	}
+
 }

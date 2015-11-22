@@ -95,7 +95,7 @@ public class BluetoothClient implements DiscoveryListener {
             }
             System.out.println("Found SPP Service");
             // Open Connection to device
-        streamConnection = (StreamConnection) Connector.open(connectionURL);
+            streamConnection = (StreamConnection) Connector.open(connectionURL);
 
             // Streamer for Output
             outStream = streamConnection.openOutputStream();
