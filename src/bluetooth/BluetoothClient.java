@@ -29,7 +29,7 @@ public class BluetoothClient implements DiscoveryListener {
             // Find bluetooth devices
             DiscoveryAgent agent = localDevice.getDiscoveryAgent();
 
-            System.out.println("Starting device inquiry…");
+            System.out.println("Starting device inquiry");
             // Search for bluetooth-devices
             agent.startInquiry(DiscoveryAgent.GIAC, this);
 
@@ -95,7 +95,7 @@ public class BluetoothClient implements DiscoveryListener {
             }
             System.out.println("Found SPP Service");
             // Open Connection to device
-            streamConnection = (StreamConnection) Connector.open(connectionURL);
+        streamConnection = (StreamConnection) Connector.open(connectionURL);
 
             // Streamer for Output
             outStream = streamConnection.openOutputStream();
@@ -124,10 +124,17 @@ public class BluetoothClient implements DiscoveryListener {
     }
 
     public void writeChars(char[] chars) {
-        if (pWriter != null) { // Device connected
+        if (pWriter != null && chars != null) { // Device connected
             pWriter.write(chars); // Write an Array of Chars to the Buffer
             pWriter.flush(); // Send Buffer
         }
+    }
+    
+    public void writeInt(int integer) {
+    	if (pWriter != null) { // Device connected
+    		pWriter.write(integer);
+    		pWriter.flush();
+    	}
     }
 
     public String readAll() {
@@ -135,7 +142,7 @@ public class BluetoothClient implements DiscoveryListener {
             String message = "";
             try {
                 while (bReader.ready()) {
-                    message += bReader.read(); // Read
+                    message += (char) bReader.read(); // Read
                 }
             } catch (IOException e) {
                 e.printStackTrace();

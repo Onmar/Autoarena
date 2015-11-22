@@ -9,10 +9,6 @@ public class MBot {
     private boolean connected = false;
     private String bluetoothAddress;
     private BluetoothClient serialConn = new BluetoothClient();
-    private States lastState = States.STOP;
-    private int lastRSpeed = 0;
-    private int lastLSpeed = 0;
-    private MotorDirection lastDirection = MotorDirection.STOP;
 
     public MBot(String startBluetoothAddress) {
         bluetoothAddress = startBluetoothAddress;
@@ -24,6 +20,7 @@ public class MBot {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            connected = false;
         }
     }
 
@@ -37,6 +34,7 @@ public class MBot {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                connected = false;
             }
         }
         return connected;
@@ -74,25 +72,15 @@ public class MBot {
 
     public void sendCommand(States state, int rSpeed, int lSpeed, MotorDirection direction) {
         if (connected) {
-            char[] command = new char[] { (char) state.ordinal(), (char) rSpeed, (char) lSpeed,
-                    (char) direction.ordinal() };
-            serialConn.writeChars(command);
+            // char[] command = new char[] { (char) state.ordinal(), (char) rSpeed, (char) lSpeed,
+            //        (char) direction.ordinal() };
+            //serialConn.writeChars(command);
+        	String command = "";
+            command += (char) state.ordinal();
+            command += (char) rSpeed;
+            command += (char) lSpeed;
+            command += (char) direction.ordinal();
+        	serialConn.writeString(command);
         }
-    }
-
-    public void changeState(States state) {
-        lastState = state;
-        this.sendCommand(state, lastRSpeed, lastLSpeed, lastDirection);
-    }
-
-    public void changeSpeed(int rSpeed, int lSpeed) {
-        lastRSpeed = rSpeed;
-        lastLSpeed = lSpeed;
-        this.sendCommand(lastState, rSpeed, lSpeed, lastDirection);
-    }
-
-    public void changeDirection(MotorDirection direction) {
-        lastDirection = direction;
-        this.sendCommand(lastState, lastRSpeed, lastLSpeed, direction);
     }
 }

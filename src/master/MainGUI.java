@@ -58,11 +58,11 @@ public class MainGUI {
         frame.setBounds(100, 100, 350, 230);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JComboBox<String> comboBox = new JComboBox<String>();
+        final JComboBox<String> comboBox = new JComboBox<String>();
 
         // Control Panel
         JPanel controlPanel = new JPanel();
-        JButton connect = new JButton("Connect");
+        final JButton connect = new JButton("Connect");
         JButton sync = new JButton("Sync");
         JButton lineFollow = new JButton("Line Follow");
         JButton lineSearch = new JButton("Line Search");

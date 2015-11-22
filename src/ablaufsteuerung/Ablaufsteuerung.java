@@ -8,22 +8,22 @@ import master.Globals;
 public class Ablaufsteuerung {
 
     private static boolean endProgram = false;
-    private static ZuständeSpiel zustandSpiel = ZuständeSpiel.SPIEL_AUS;
-    private static ZuständeBall zustandBall = ZuständeBall.KEIN_BALL;
+    private static ZustaendeSpiel zustandSpiel = ZustaendeSpiel.SPIEL_AUS;
+    private static ZustaendeBall zustandBall = ZustaendeBall.KEIN_BALL;
     private static long lastMilis;
     
     private static void laufendesSpiel() {
         switch (zustandBall) {
         case KEIN_BALL:
             if(IOHandler.spieler1_NeuerBall && IOHandler.spieler2_NeuerBall) {
-                zustandBall = ZuständeBall.BALL_EINWURF;
+                zustandBall = ZustaendeBall.BALL_EINWURF;
             }
             break;
         case BALL_EINWURF:
             io.IOHandler.ball_Motor = true;
             if(io.IOHandler.ball_BallEingeworfen) {
                 io.IOHandler.ball_Motor = false;
-                zustandBall = ZuständeBall.BALL_VORHANDEN;
+                zustandBall = ZustaendeBall.BALL_VORHANDEN;
                 lastMilis = System.currentTimeMillis();
             }
             break;
@@ -32,20 +32,20 @@ public class Ablaufsteuerung {
             Globals.spielzeit += (currentMilis - lastMilis);
             lastMilis = currentMilis;
             if(io.IOHandler.spieler1_Tor) {
-                zustandBall = ZuständeBall.TOR_SPIELER2;
+                zustandBall = ZustaendeBall.TOR_SPIELER2;
             } else {
                 if(io.IOHandler.spieler2_Tor) {
-                    zustandBall = ZuständeBall.TOR_SPIELER2;
+                    zustandBall = ZustaendeBall.TOR_SPIELER2;
                 }
             }
             break;
         case TOR_SPIELER1:
             Globals.toreSpieler1++;
-            zustandBall = ZuständeBall.KEIN_BALL;
+            zustandBall = ZustaendeBall.KEIN_BALL;
             break;
         case TOR_SPIELER2:
             Globals.toreSpieler2++;
-            zustandBall = ZuständeBall.KEIN_BALL;
+            zustandBall = ZustaendeBall.KEIN_BALL;
             break;
         }
     }
@@ -60,7 +60,7 @@ public class Ablaufsteuerung {
             switch (zustandSpiel) {
             case SPIEL_AUS:
                 if (IOHandler.general_SpielStarten) {
-                    zustandSpiel = ZuständeSpiel.SPIEL_INIT;
+                    zustandSpiel = ZustaendeSpiel.SPIEL_INIT;
                 }
                 break;
             case SPIEL_INIT:
@@ -68,16 +68,16 @@ public class Ablaufsteuerung {
                 if (Globals.mBotsBereit) {
                     Globals.ausparken = false;
                     Globals.mBotsBereit = false;
-                    zustandSpiel = ZuständeSpiel.SPIEL_LÄUFT;
+                    zustandSpiel = ZustaendeSpiel.SPIEL_LAEUFT;
                 }
                 break;
-            case SPIEL_LÄUFT:
+            case SPIEL_LAEUFT:
                 laufendesSpiel();
-                if ((Globals.spielzeit > (5 * 60 * 1000) || Globals.toreSpieler1 + Globals.toreSpieler2 >= 11) && (zustandBall == ZuständeBall.TOR_SPIELER1 || zustandBall == ZuständeBall.TOR_SPIELER2)) { // 5 Minutes in ms
+                if ((Globals.spielzeit > (5 * 60 * 1000) || Globals.toreSpieler1 + Globals.toreSpieler2 >= 11) && (zustandBall == ZustaendeBall.TOR_SPIELER1 || zustandBall == ZustaendeBall.TOR_SPIELER2)) { // 5 Minutes in ms
                     Globals.toreSpieler1 = 0;
                     Globals.toreSpieler2 = 0;
                     Globals.spielzeit = 0;
-                    zustandSpiel = ZuständeSpiel.SPIEL_FERTIG;
+                    zustandSpiel = ZustaendeSpiel.SPIEL_FERTIG;
                 }
                 break;
             case SPIEL_FERTIG:
@@ -85,7 +85,7 @@ public class Ablaufsteuerung {
                 if (Globals.mBotsGeparkt) {
                     Globals.einparken = false;
                     Globals.mBotsGeparkt = false;
-                    zustandSpiel = ZuständeSpiel.SPIEL_AUS;
+                    zustandSpiel = ZustaendeSpiel.SPIEL_AUS;
                 }
                 break;
             }

@@ -16,8 +16,8 @@ public class ReadConsoleInput {
      * Liest einen String von der Konsole
      * <p>
      * Die Methode {@code readString()} liest einen String von der Konsole ein
-     * und liefert diesen String zurück. Wird etwas anderes als ein String
-     * eingegeben, so liefert die Methode einen leeren String zurück.
+     * und liefert diesen String zurÃ¼ck. Wird etwas anderes als ein String
+     * eingegeben, so liefert die Methode einen leeren String zurÃ¼ck.
      * 
      * @param printError
      *            Gibt an, ob ein Error in der Konsole ausgegeben wird.
@@ -37,8 +37,8 @@ public class ReadConsoleInput {
      * Liest eine ganze Zahl von der Konsole.
      * <p>
      * Die Methode {@code readInt()} liest eine ganze Zahl von der Konsole ein
-     * und liefert die Zahl zurück. Wird etwas anderes als eine ganze Zahl
-     * eingegeben, so liefert die Methode die kleinstmögliche darstellbare ganze
+     * und liefert die Zahl zurï¿½ck. Wird etwas anderes als eine ganze Zahl
+     * eingegeben, so liefert die Methode die kleinstmï¿½gliche darstellbare ganze
      * Zahl.
      * 
      * @param printError
@@ -59,7 +59,7 @@ public class ReadConsoleInput {
      * Liest eine Gleitkommazahl von der Konsole.
      * <p>
      * Die Methode {@code readDouble()} liest eine Gelitkommazahl von der
-     * Konsole ein und liefert diese Zahl zurück. Wird etwas anderes als eine
+     * Konsole ein und liefert diese Zahl zurï¿½ck. Wird etwas anderes als eine
      * Gleitkommazahl eingegeben, so liefert die Methode NaN.
      * 
      * @param printError
@@ -81,9 +81,9 @@ public class ReadConsoleInput {
      * Liest einen Boolschen Wert von der Konsole
      * <p>
      * Die Methode {@code readBoolean()} liest einen String von der Konsole ein
-     * und liefert true zurück wenn der eingegebene String "y" oder "Y" ist.
-     * Wird etwas anderes eingegeben wird false zurückgegeben.
-     * Bei einem Fehler wird false zurückgegeben.
+     * und liefert true zurï¿½ck wenn der eingegebene String "y" oder "Y" ist.
+     * Wird etwas anderes eingegeben wird false zurï¿½ckgegeben.
+     * Bei einem Fehler wird false zurï¿½ckgegeben.
      * 
      * @param printError
      *            Gibt an, ob ein Error in der Konsole ausgegeben wird.

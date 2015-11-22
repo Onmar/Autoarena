@@ -4,18 +4,27 @@ public class TestProgram {
 
     public static void main(String[] args) {
 
-        States state = States.DRIVE;
-        int rSpeed = 255;
-        int lSpeed = 100;
+    	States state = States.DRIVE;
+        int rSpeed = 100;
+        int lSpeed = 200;
         MotorDirection direction = MotorDirection.FORWARD;
-
-        char[] command = new char[] { (char) state.ordinal(), (char) rSpeed, (char) lSpeed,
-                (char) direction.ordinal() };
-
-        for (int i = 0; i < command.length; i++) {
-            System.out.print(command[i]);
+    	
+        
+        String command = "";
+        command += (char) state.ordinal();
+        if(rSpeed <= 127) {
+        	command += (char) rSpeed;
+        } else {
+        	command += (char) ((rSpeed - 256) & 0xFF);
         }
-
+        if (lSpeed <= 127) {
+        	command += (char) lSpeed;
+        } else {
+        	command += (char) ((lSpeed - 256) & 0xFF);
+        }
+        command += (char) direction.ordinal();
+        
+        System.out.println(command);
     }
 
 }

@@ -46,7 +46,7 @@ public class Example_Client implements DiscoveryListener {
         // find devices
         DiscoveryAgent agent = localDevice.getDiscoveryAgent();
 
-        System.out.println("Starting device inquiry…");
+        System.out.println("Starting device inquiry");
         agent.startInquiry(DiscoveryAgent.GIAC, client);
 
         try {

@@ -19,7 +19,7 @@ public class MBotSteuerung {
 	// Array with mBot-Object References
 	private static MBot[] mBots = new MBot[] { null, null, null };
 	// Current State of FlowControl
-	private static ZuständeSteuerung zustand = ZuständeSteuerung.STOP;
+	private static ZustaendeSteuerung zustand = ZustaendeSteuerung.STOP;
 
 	// Array Index of mBot currently used by player 1.
 	private static int Spieler1_mBotIndex = 0;
@@ -155,23 +155,23 @@ public class MBotSteuerung {
 			switch (zustand) {
 			case STOP:
 				if (Globals.ausparken) {
-					zustand = ZuständeSteuerung.AUSPARKEN;
+					zustand = ZustaendeSteuerung.AUSPARKEN;
 					Spieler1_mBotIndex = 0;
 					Spieler2_mBotIndex = 1;
 					if (mBot_StartTimes[2] < mBot_StartTimes[0]) {
-						// 2 lädt länger als 0
+						// 2 lï¿½dt lï¿½nger als 0
 
 						if (mBot_StartTimes[0] < mBot_StartTimes[1]) {
-							// 0 lädt länger als 1
+							// 0 lï¿½dt lï¿½nger als 1
 							Spieler2_mBotIndex = 2;
 						} else {
-							// 1 lädt länger als 0
+							// 1 lï¿½dt lï¿½nger als 0
 							Spieler1_mBotIndex = 2;
 						}
 					} else {
-						// 0 lädt länger als 2
+						// 0 lï¿½dt lï¿½nger als 2
 						if (mBot_StartTimes[2] < mBot_StartTimes[1]) {
-							// 2 lädt länger als 1
+							// 2 lï¿½dt lï¿½nger als 1
 							Spieler2_mBotIndex = 2;
 						}
 					}
@@ -181,12 +181,12 @@ public class MBotSteuerung {
 				break;
 			case AUSPARKEN:
 				ausparken(Spieler1_mBotIndex, Spieler2_mBotIndex);
-				zustand = ZuständeSteuerung.SPIEL;
+				zustand = ZustaendeSteuerung.SPIEL;
 				break;
 			case SPIEL:
 				spielSendCommands();
 				if (Globals.einparken) {
-					zustand = ZuständeSteuerung.EINPARKEN;
+					zustand = ZustaendeSteuerung.EINPARKEN;
 					mBots[Spieler1_mBotIndex].sendCommand(States.LINE_SEARCH, 200, 200, MotorDirection.FORWARD);
 					mBots[Spieler1_mBotIndex].sendCommand(States.LINE_SEARCH, 200, 200, MotorDirection.FORWARD);
 				}
@@ -194,7 +194,7 @@ public class MBotSteuerung {
 			case EINPARKEN:
 				einparken(Spieler1_mBotIndex, Spieler2_mBotIndex);
 				Globals.mBotsGeparkt = true;
-				zustand = ZuständeSteuerung.STOP;
+				zustand = ZustaendeSteuerung.STOP;
 				break;
 			}
 		}
