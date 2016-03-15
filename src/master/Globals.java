@@ -10,7 +10,8 @@ public class Globals {
     public static int toreSpieler1 = 0;
     public static int toreSpieler2 = 0;
     
-
+    public static boolean stop = false;
+    
     public static double joystickMaxInc = 4096;
 
 }
