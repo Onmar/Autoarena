@@ -1,16 +1,11 @@
 package display;
 
 import java.awt.EventQueue;
-import java.awt.Rectangle;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
-
-import ablaufsteuerung.Ablaufsteuerung;
-import ablaufsteuerung.ZustaendeSpiel;
 
 import master.Globals;
 

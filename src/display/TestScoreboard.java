@@ -3,12 +3,9 @@ package display;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.TimeUnit;
-
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -38,6 +35,7 @@ public class TestScoreboard {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					@SuppressWarnings("unused")
 					Scoreboard window = new Scoreboard();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -83,23 +81,21 @@ public class TestScoreboard {
 		JPanel panel_1 = new JPanel();
 		frame.getContentPane().add(panel_1, BorderLayout.SOUTH);
 		
-		final JComboBox player1_Color = new JComboBox();
+		final JComboBox<String> player1_Color = new JComboBox<String>();
 		player1_Color.setMaximumRowCount(4);
-		player1_Color.setModel(new DefaultComboBoxModel(new String[] {"White", "Red", "Green", "Blue"}));
+		player1_Color.setModel(new DefaultComboBoxModel<String>(new String[] {"White", "Red", "Green", "Blue"}));
 		player1_Color.setSelectedIndex(0);
 		panel_1.add(player1_Color);
-		// ComboBox to select the current mBot.
-        player1_Color.setModel(new DefaultComboBoxModel<String>(new String[] {"White", "Red", "Green", "Blue"}));
-        player1_Color.addActionListener(new java.awt.event.ActionListener() {
+		player1_Color.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 Globals.mBotSpieler1 = Colors.values()[player1_Color.getSelectedIndex()];
             }
         });
 		
-		final JComboBox player2_Color = new JComboBox();
-		player2_Color.setModel(new DefaultComboBoxModel(new String[] {"White", "Red", "Green", "Blue"}));
-		player2_Color.setSelectedIndex(0);
+		final JComboBox<String> player2_Color = new JComboBox<String>();
 		player2_Color.setMaximumRowCount(4);
+		player2_Color.setModel(new DefaultComboBoxModel<String>(new String[] {"White", "Red", "Green", "Blue"}));
+		player2_Color.setSelectedIndex(0);
 		panel_1.add(player2_Color);
 		player2_Color.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
