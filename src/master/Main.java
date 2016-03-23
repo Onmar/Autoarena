@@ -15,7 +15,7 @@ public class Main {
         for (int i = 0; i < mBots.length && i < bluetoothAddresses.length; i++) {
             mBots[i] = new MBot(bluetoothAddresses[i]);
             boolean tryAgain = false;
-            while (!mBots[i].isConnected() && tryAgain) {
+            while (!mBots[i].isConnected(true) && tryAgain) {
                 System.out.print("mBot " + (i + 1) + " not found. Retry? (Y / N): ");
                 tryAgain = ReadConsoleInput.readBoolean(false);
                 if (tryAgain) {

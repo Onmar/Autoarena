@@ -153,6 +153,14 @@ public class BluetoothClient implements DiscoveryListener {
         }
     }
 
+    public boolean isConnected() {
+    	if(remoteDevice != null) {
+    		return pWriter.checkError();
+    	} else {
+    		return false;
+    	}
+    }
+    
     public void disconnect() throws IOException {
         if (pWriter != null) { // Close PrintWriter
             pWriter.close();

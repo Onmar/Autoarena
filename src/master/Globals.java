@@ -3,7 +3,7 @@ package master;
 import display.Colors;
 
 public class Globals {
-    
+	
     public static boolean ausparken = false;
     public static boolean einparken = false;
     public static boolean mBotsBereit = false;
@@ -15,8 +15,10 @@ public class Globals {
     public static Colors mBotSpieler1 = Colors.WHITE;
     public static Colors mBotSpieler2 = Colors.WHITE;
     
-    public static boolean stop = false;
+    public static int round = 0;
+
+    public static boolean mBotDisconnected = false;
     
-    public static double joystickMaxInc = 4096;
+    public static boolean stop = false;
 
 }

@@ -1,6 +1,5 @@
 package master;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import mBot.MBot;
@@ -22,11 +21,7 @@ public class TestAnalogInput {
 
 	public static void main(String[] args) {
 
-		try {
-			IOHandler.init(true);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		IOHandler.init(true);
 
 		System.out.println("IO initialized!");
 

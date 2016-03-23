@@ -8,8 +8,6 @@ import master.Globals;
 
 public class MBotSteuerung {
 
-	private static boolean endProgram = false;
-
 	/*
 	 * Bluetooth Addresses of mBots: mBot1: 000502031DD3 mBot2: mBot3:
 	 */
@@ -25,187 +23,280 @@ public class MBotSteuerung {
 	private static int Spieler1_mBotIndex = 0;
 	// Array Index of mBot currently used by player 2.
 	private static int Spieler2_mBotIndex = 0;
-	// Last Time an mBot has started.
-	private static long[] mBot_StartTimes = new long[bluetoothAddresses.length];
-	
-	private void einparken(int mBot1, int mBot2) {
-		IOHandler.ladeBoxen_SollPosition = LagerPosition.values()[mBot1 + 1];
-		mBots[mBot1].sendCommand(States.LINE_FOLLOW, 200, 200, MotorDirection.FORWARD);
-		while(!IOHandler.ladeBoxen_Sensoren[mBot1]) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(100);
-			} catch (InterruptedException e) {
+
+	// Gibt die skalierte Geschwindigkeit zurück.
+	private static int getSpeed(int joystickValue, int deadzonePos, int deadzoneNeg, int minMotorSpeedPos,
+			int minMotorSpeedNeg) {
+		int speed;
+		if (IOHandler.spieler1_JoystickL > 0) {
+			// Case: Joystick nach vorn
+			if (IOHandler.spieler1_JoystickL < deadzonePos) {
+				// Case: Joystick in positiver totzone
+				speed = 0;
+			} else {
+				// Case: Joystick nicht in positiver totzone
+				speed = (int) Math.round(((double) (joystickValue - deadzonePos)) * (((double) 255 - minMotorSpeedPos)
+						/ ((double) ((IOHandler.joystickAmplitude / 2) - 1) - deadzonePos))) + minMotorSpeedPos;
+			}
+		} else {
+			// Linker Joystick nach hinten
+			if (-joystickValue < deadzoneNeg) {
+				// Case: Linker Joystick in negativer totzone
+				speed = 0;
+			} else {
+				// Case: Linker Joystick nicht in negativer totzone
+				speed = (int) Math.round(((double) (-joystickValue - deadzoneNeg)) * (((double) 255 - minMotorSpeedNeg)
+						/ ((double) ((IOHandler.joystickAmplitude / 2) - 1) - deadzoneNeg))) + minMotorSpeedNeg;
 			}
 		}
-		IOHandler.ladeBoxen_SollPosition = LagerPosition.values()[mBot2 + 1];
-		mBots[mBot2].sendCommand(States.LINE_FOLLOW, 200, 200, MotorDirection.FORWARD);
-		while(!IOHandler.ladeBoxen_Sensoren[mBot2]) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(100);
-			} catch (InterruptedException e) {
+		return speed;
+	}
+
+	// Gibt die Bewegungsrichtung zurück
+	private static MotorDirection getDirection(int joystickValueL, int joystickValueR) {
+		MotorDirection direction;
+		if (joystickValueL > 0) {
+			if (joystickValueR > 0) {
+				direction = MotorDirection.FORWARD;
+			} else {
+				direction = MotorDirection.RIGHT;
 			}
+		} else {
+			if (joystickValueR > 0) {
+				direction = MotorDirection.LEFT;
+			} else {
+				direction = MotorDirection.BACKWARD;
+			}
+		}
+		return direction;
+	}
+
+	// Stoppt alle mBots
+	private static void stopAllMBots() {
+		for (int i = 0; i < mBots.length; i++) {
+			mBots[i].sendCommand(States.STOP, 0, 0, MotorDirection.STOP);
 		}
 	}
 
-	private void ausparken(int mBot1, int mBot2) {
-		IOHandler.ladeBoxen_SollPosition = LagerPosition.values()[mBot1 + 1];
-		while (IOHandler.ladeBoxen_MomentanePosition != LagerPosition.values()[mBot1 + 1]) {
+	// Sendet die Kommandos um die mBots einzuparken
+	private static void einparken(int mBot1, int mBot2) {
+		// LadeBox zu mBotBox von Spieler1
+		IOHandler.setLadeBoxSollPosition(LagerPosition.values()[mBot1 + 1]);
+		// mBot von Spieler2 weg von Linie fahren
+		mBots[mBot2].sendCommand(States.AVOID_LINE, 200, 200, MotorDirection.FORWARD);
+		// Warten bis Lager bei Box von Spieler1 ist
+		while (!IOHandler.positionReached()) {
 			try {
 				TimeUnit.MILLISECONDS.sleep(100);
 			} catch (InterruptedException e) {
 			}
 		}
-		mBots[mBot1].sendCommand(States.DRIVE, 200, 200, MotorDirection.FORWARD);
+		// mBot von Spieler1 soll Box suchen
+		mBots[mBot1].sendCommand(States.LINE_SEARCH, 200, 200, MotorDirection.FORWARD);
+		// Warten bis mBot von Spieler1 bei Box ist
+		while (!IOHandler.ladeBoxen_TorSensoren[mBot1]) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(20);
+			} catch (InterruptedException e) {
+			}
+		}
+		// mBot von Spieler1 einparkieren
+		mBots[mBot1].sendCommand(States.PARKING, 100, 100, MotorDirection.FORWARD);
+		// Warten bis mBot von Spieler1 in Box ist
+		while (!IOHandler.ladeBoxen_Sensoren[mBot1]) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(20);
+			} catch (InterruptedException e) {
+			}
+		}
+		// mBot von Spieler1 stoppen
+		mBots[mBot1].sendCommand(States.STOP, 0, 0, MotorDirection.STOP);
+		// Lager zur mBotBox von Spieler2
+		IOHandler.setLadeBoxSollPosition(LagerPosition.values()[mBot2 + 1]);
+		// Warten bis Lager bei Box von Spieler2 ist
+		while (!IOHandler.positionReached()) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
+		// mBot von Spieler2 soll Box suchen
+		mBots[mBot2].sendCommand(States.LINE_SEARCH, 200, 200, MotorDirection.FORWARD);
+		// Warten bis mBot von Spieler2 bei Box ist
+		while (!IOHandler.ladeBoxen_TorSensoren[mBot2]) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
+		// mBot von Spieler2 einparkieren
+		mBots[mBot2].sendCommand(States.PARKING, 100, 100, MotorDirection.FORWARD);
+		// Warten bis mBot von Spieler2 in Box ist
+		while (!IOHandler.ladeBoxen_Sensoren[mBot2]) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(20);
+			} catch (InterruptedException e) {
+			}
+		}
+		// mBot von Spieler2 stoppen
+		mBots[mBot2].sendCommand(States.STOP, 0, 0, MotorDirection.STOP);
+		// Lager zum Tor
+		IOHandler.setLadeBoxSollPosition(LagerPosition.TOR);
+		while (!IOHandler.positionReached()) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
+
+	}
+
+	// Sendet die Kommandos um die mBots auszuparken
+	private static void ausparken(int mBot1, int mBot2) {
+		IOHandler.setLadeBoxSollPosition(LagerPosition.values()[mBot1 + 1]);
+		while (!IOHandler.positionReached()) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
+		mBots[mBot1].sendCommand(States.DRIVE, 200, 200, MotorDirection.BACKWARD);
 		try {
 			TimeUnit.SECONDS.sleep(2);
 		} catch (InterruptedException e) {
 		}
-		IOHandler.ladeBoxen_SollPosition = LagerPosition.values()[mBot2 + 1];
-		mBots[mBot1].sendCommand(States.DRIVE, 100, 100, MotorDirection.RIGHT);
+		IOHandler.setLadeBoxSollPosition(LagerPosition.values()[mBot2 + 1]);
+		mBots[mBot1].sendCommand(States.DRIVE, 150, 150, MotorDirection.LEFT);
 		try {
-			TimeUnit.SECONDS.sleep(2);
+			TimeUnit.MILLISECONDS.sleep(500);
 		} catch (InterruptedException e) {
 		}
 		mBots[mBot1].sendCommand(States.DRIVE, 200, 200, MotorDirection.FORWARD);
 		try {
-			TimeUnit.SECONDS.sleep(2);
+			TimeUnit.SECONDS.sleep(1);
 		} catch (InterruptedException e) {
 		}
 		mBots[mBot1].sendCommand(States.STOP, 0, 0, MotorDirection.STOP);
-		while (IOHandler.ladeBoxen_MomentanePosition != LagerPosition.values()[mBot1 + 1]) {
+		while (!IOHandler.positionReached()) {
 			try {
 				TimeUnit.MILLISECONDS.sleep(100);
 			} catch (InterruptedException e) {
 			}
 		}
-		mBots[mBot2].sendCommand(States.DRIVE, 200, 200, MotorDirection.FORWARD);
+		mBots[mBot2].sendCommand(States.DRIVE, 200, 200, MotorDirection.BACKWARD);
 		try {
 			TimeUnit.SECONDS.sleep(2);
 		} catch (InterruptedException e) {
 		}
-		mBots[mBot2].sendCommand(States.DRIVE, 100, 100, MotorDirection.LEFT);
+		IOHandler.setLadeBoxSollPosition(LagerPosition.TOR);
+		mBots[mBot2].sendCommand(States.DRIVE, 150, 150, MotorDirection.RIGHT);
 		try {
-			TimeUnit.SECONDS.sleep(2);
+			TimeUnit.MILLISECONDS.sleep(500);
 		} catch (InterruptedException e) {
 		}
 		mBots[mBot2].sendCommand(States.DRIVE, 200, 200, MotorDirection.FORWARD);
 		try {
-			TimeUnit.SECONDS.sleep(2);
+			TimeUnit.SECONDS.sleep(1);
 		} catch (InterruptedException e) {
 		}
 		mBots[mBot2].sendCommand(States.STOP, 0, 0, MotorDirection.STOP);
+		while (!IOHandler.positionReached()) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
 	}
 
-	// Sends Commands to mBots while game is running
-	public void spielSendCommands() {
+	// SSendet die KOmmandos während dem Spiel
+	private static void spielSendCommands(int mBot1, int mBot2) {
 		// Speed of Left Motor for player 1
-		int Sp1SpeedL = Math.abs((int) Math.round(IOHandler.spieler1_JoystickL / Globals.joystickMaxInc * 255));
+		int Sp1SpeedL = getSpeed(IOHandler.spieler1_JoystickL, 32, 32, 60, 60);
 		// Speed of Right Motor for player 1
-		int Sp1SpeedR = Math.abs((int) Math.round(IOHandler.spieler1_JoystickR / Globals.joystickMaxInc * 255));
+		int Sp1SpeedR = getSpeed(IOHandler.spieler1_JoystickR, 32, 32, 60, 60);
 		// Motor Direction for player 1
-		MotorDirection Sp1Dir;
-		if (Math.signum(IOHandler.spieler1_JoystickL) == 1.0) {
-			if (Math.signum(IOHandler.spieler1_JoystickR) == 1.0) {
-				Sp1Dir = MotorDirection.FORWARD;
-			} else {
-				Sp1Dir = MotorDirection.RIGHT;
-			}
-		} else {
-			if (Math.signum(IOHandler.spieler1_JoystickR) == 1.0) {
-				Sp1Dir = MotorDirection.LEFT;
-			} else {
-				Sp1Dir = MotorDirection.BACKWARD;
-			}
-		}
+		MotorDirection Sp1Dir = getDirection(IOHandler.spieler1_JoystickL, IOHandler.spieler1_JoystickR);
 
-		// Speed of Left Motor for player 2
-		int Sp2SpeedL = Math.abs((int) Math.round(IOHandler.spieler2_JoystickL / Globals.joystickMaxInc * 255));
-		// Speed of Right Motor for player 2
-		int Sp2SpeedR = Math.abs((int) Math.round(IOHandler.spieler2_JoystickR / Globals.joystickMaxInc * 255));
-		// Motor Direction for player 2
-		MotorDirection Sp2Dir;
-		if (Math.signum(IOHandler.spieler2_JoystickL) == 1.0) {
-			if (Math.signum(IOHandler.spieler2_JoystickR) == 1.0) {
-				Sp2Dir = MotorDirection.FORWARD;
-			} else {
-				Sp2Dir = MotorDirection.RIGHT;
-			}
-		} else {
-			if (Math.signum(IOHandler.spieler2_JoystickR) == 1.0) {
-				Sp2Dir = MotorDirection.LEFT;
-			} else {
-				Sp2Dir = MotorDirection.BACKWARD;
-			}
-		}
+		// Speed of Left Motor for player 1
+		int Sp2SpeedL = getSpeed(IOHandler.spieler2_JoystickL, 32, 32, 60, 60);
+		// Speed of Right Motor for player 1
+		int Sp2SpeedR = getSpeed(IOHandler.spieler2_JoystickR, 32, 32, 60, 60);
+		// Motor Direction for player 1
+		MotorDirection Sp2Dir = getDirection(IOHandler.spieler2_JoystickL, IOHandler.spieler2_JoystickR);
+
 		// Send Commands to mBots
-		mBots[Spieler1_mBotIndex].sendCommand(States.DRIVE, Sp1SpeedR, Sp1SpeedL, Sp1Dir);
-		mBots[Spieler2_mBotIndex].sendCommand(States.DRIVE, Sp2SpeedR, Sp2SpeedL, Sp2Dir);
+		mBots[mBot1].sendCommand(States.DRIVE, Sp1SpeedL, Sp1SpeedR, Sp1Dir);
+		mBots[mBot2].sendCommand(States.DRIVE, Sp2SpeedL, Sp2SpeedR, Sp2Dir);
 	}
 
-	public void run() {
-		// Init
+	// Oeffnet alle Verbindungen zu den mBots
+	public static void init() {
 		for (int i = 0; i < mBots.length && i < bluetoothAddresses.length; i++) {
 			mBots[i] = new MBot(bluetoothAddresses[i]);
 			mBots[i].synch();
 			mBots[i].sendCommand(States.STOP, 0, 0, MotorDirection.STOP);
 		}
-
-		// Main Loop
-		while (!endProgram) {
-			switch (zustand) {
-			case STOP:
-				if (Globals.ausparken) {
-					zustand = ZustaendeSteuerung.AUSPARKEN;
-					Spieler1_mBotIndex = 0;
-					Spieler2_mBotIndex = 1;
-					if (mBot_StartTimes[2] < mBot_StartTimes[0]) {
-						// 2 lï¿½dt lï¿½nger als 0
-
-						if (mBot_StartTimes[0] < mBot_StartTimes[1]) {
-							// 0 lï¿½dt lï¿½nger als 1
-							Spieler2_mBotIndex = 2;
-						} else {
-							// 1 lï¿½dt lï¿½nger als 0
-							Spieler1_mBotIndex = 2;
-						}
-					} else {
-						// 0 lï¿½dt lï¿½nger als 2
-						if (mBot_StartTimes[2] < mBot_StartTimes[1]) {
-							// 2 lï¿½dt lï¿½nger als 1
-							Spieler2_mBotIndex = 2;
-						}
-					}
-					mBot_StartTimes[Spieler1_mBotIndex] = System.currentTimeMillis();
-					mBot_StartTimes[Spieler2_mBotIndex] = System.currentTimeMillis();
-				}
-				break;
-			case AUSPARKEN:
-				ausparken(Spieler1_mBotIndex, Spieler2_mBotIndex);
-				zustand = ZustaendeSteuerung.SPIEL;
-				break;
-			case SPIEL:
-				spielSendCommands();
-				if (Globals.einparken) {
-					zustand = ZustaendeSteuerung.EINPARKEN;
-					mBots[Spieler1_mBotIndex].sendCommand(States.LINE_SEARCH, 200, 200, MotorDirection.FORWARD);
-					mBots[Spieler1_mBotIndex].sendCommand(States.LINE_SEARCH, 200, 200, MotorDirection.FORWARD);
-				}
-				break;
-			case EINPARKEN:
-				einparken(Spieler1_mBotIndex, Spieler2_mBotIndex);
-				Globals.mBotsGeparkt = true;
-				zustand = ZustaendeSteuerung.STOP;
-				break;
-			}
-		}
-
-		// Close References
-		for(int i = 0 ; i < mBots.length; i++) {
-			mBots[i].disconnect();
-		}
-		endProgram = false;
 	}
 
-	
+	// Statusmaschine
+	public static void run() {
+		// Check if all mBots are still connected
+		for (int i = 0; i < mBots.length; i++) {
+			if (!mBots[i].isConnected(false)) {
+				Globals.mBotDisconnected = true;
+				stopAllMBots();
+				mBots[i].connect();
+				mBots[i].synch();
+			}
+		}
+		// Zustandsmaschine für mBotSteuerung
+		switch (zustand) {
+		case STOP:
+			if (Globals.ausparken) {
+				zustand = ZustaendeSteuerung.AUSPARKEN;
+			}
+			break;
+		case AUSPARKEN:
+			// Waehlt die beiden mBots aus, welche am laengsten am laden
+			// sind.
+			switch (Globals.round % 3) {
+			case 0:
+				Spieler1_mBotIndex = 0;
+				Spieler2_mBotIndex = 1;
+				break;
+			case 1:
+				Spieler1_mBotIndex = 0;
+				Spieler2_mBotIndex = 2;
+				break;
+			case 2:
+				Spieler1_mBotIndex = 1;
+				Spieler2_mBotIndex = 2;
+				break;
+			}
+			ausparken(Spieler1_mBotIndex, Spieler2_mBotIndex);
+			zustand = ZustaendeSteuerung.SPIEL;
+			break;
+		case SPIEL:
+			spielSendCommands(Spieler1_mBotIndex, Spieler2_mBotIndex);
+			if (Globals.einparken) {
+				zustand = ZustaendeSteuerung.EINPARKEN;
+			}
+			break;
+		case EINPARKEN:
+			einparken(Spieler1_mBotIndex, Spieler2_mBotIndex);
+			Globals.mBotsGeparkt = true;
+			zustand = ZustaendeSteuerung.STOP;
+			break;
+		}
+	}
+
+	// Schliesst alle Verbindungen
+	public void close() {
+		// Close References
+		for (int i = 0; i < mBots.length; i++) {
+			mBots[i].disconnect();
+			mBots[i] = null;
+		}
+	}
 
 }

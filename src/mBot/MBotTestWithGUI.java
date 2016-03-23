@@ -1,16 +1,13 @@
-package master;
+package mBot;
 
 import java.awt.*;
 import javax.swing.*;
 
-import mBot.MBot;
-import mBot.MotorDirection;
-import mBot.States;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.charset.Charset;
 
-public class MainGUI {
+public class MBotTestWithGUI {
 
     private JFrame frame;
     /*
@@ -34,7 +31,7 @@ public class MainGUI {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    MainGUI window = new MainGUI();
+                    MBotTestWithGUI window = new MBotTestWithGUI();
                     window.frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -46,7 +43,7 @@ public class MainGUI {
     /**
      * Create the application.
      */
-    public MainGUI() {
+    public MBotTestWithGUI() {
         initialize();
     }
 
@@ -80,7 +77,7 @@ public class MainGUI {
         comboBox.setModel(new DefaultComboBoxModel<String>(new String[] { "mBot1", "mBot2", "mBot3" }));
         comboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                if (mBots[comboBox.getSelectedIndex()].isConnected()) {
+                if (mBots[comboBox.getSelectedIndex()].isConnected(true)) {
                     connect.setText("Disconnect");
                 } else {
                     connect.setText("Connect");
@@ -88,7 +85,7 @@ public class MainGUI {
             }
         });
         // Set Start Text
-        if (mBots[comboBox.getSelectedIndex()].isConnected()) {
+        if (mBots[comboBox.getSelectedIndex()].isConnected(true)) {
             connect.setText("Disconnect");
         } else {
             connect.setText("Connect");
@@ -103,13 +100,13 @@ public class MainGUI {
         // Action Performed on Click
         connect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                if (mBots[comboBox.getSelectedIndex()].isConnected()) {
+                if (mBots[comboBox.getSelectedIndex()].isConnected(true)) {
                     mBots[comboBox.getSelectedIndex()].disconnect();
                 } else {
                     mBots[comboBox.getSelectedIndex()].connect();
                     mBots[comboBox.getSelectedIndex()].synch();
                 }
-                if (mBots[comboBox.getSelectedIndex()].isConnected()) {
+                if (mBots[comboBox.getSelectedIndex()].isConnected(true)) {
                     connect.setText("Disconnect");
                 } else {
                     connect.setText("Connect");
