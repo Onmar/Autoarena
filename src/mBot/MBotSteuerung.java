@@ -160,18 +160,18 @@ public class MBotSteuerung {
 			} catch (InterruptedException e) {
 			}
 		}
-		mBots[mBot1].sendCommand(States.DRIVE, 200, 200, MotorDirection.BACKWARD);
+		mBots[mBot1].sendCommand(States.GAME_START, 200, 200, MotorDirection.BACKWARD);
 		try {
 			TimeUnit.SECONDS.sleep(2);
 		} catch (InterruptedException e) {
 		}
 		IOHandler.setLadeBoxSollPosition(LagerPosition.values()[mBot2 + 1]);
-		mBots[mBot1].sendCommand(States.DRIVE, 150, 150, MotorDirection.LEFT);
+		mBots[mBot1].sendCommand(States.GAME_START, 150, 150, MotorDirection.LEFT);
 		try {
 			TimeUnit.MILLISECONDS.sleep(500);
 		} catch (InterruptedException e) {
 		}
-		mBots[mBot1].sendCommand(States.DRIVE, 200, 200, MotorDirection.FORWARD);
+		mBots[mBot1].sendCommand(States.GAME_START, 200, 200, MotorDirection.FORWARD);
 		try {
 			TimeUnit.SECONDS.sleep(1);
 		} catch (InterruptedException e) {
@@ -183,18 +183,18 @@ public class MBotSteuerung {
 			} catch (InterruptedException e) {
 			}
 		}
-		mBots[mBot2].sendCommand(States.DRIVE, 200, 200, MotorDirection.BACKWARD);
+		mBots[mBot2].sendCommand(States.GAME_START, 200, 200, MotorDirection.BACKWARD);
 		try {
 			TimeUnit.SECONDS.sleep(2);
 		} catch (InterruptedException e) {
 		}
 		IOHandler.setLadeBoxSollPosition(LagerPosition.TOR);
-		mBots[mBot2].sendCommand(States.DRIVE, 150, 150, MotorDirection.RIGHT);
+		mBots[mBot2].sendCommand(States.GAME_START, 150, 150, MotorDirection.RIGHT);
 		try {
 			TimeUnit.MILLISECONDS.sleep(500);
 		} catch (InterruptedException e) {
 		}
-		mBots[mBot2].sendCommand(States.DRIVE, 200, 200, MotorDirection.FORWARD);
+		mBots[mBot2].sendCommand(States.GAME_START, 200, 200, MotorDirection.FORWARD);
 		try {
 			TimeUnit.SECONDS.sleep(1);
 		} catch (InterruptedException e) {
@@ -291,7 +291,8 @@ public class MBotSteuerung {
 	}
 
 	// Schliesst alle Verbindungen
-	public void close() {
+	public static void close() {
+		stopAllMBots();
 		// Close References
 		for (int i = 0; i < mBots.length; i++) {
 			mBots[i].disconnect();

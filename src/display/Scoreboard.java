@@ -152,4 +152,8 @@ public class Scoreboard {
 		
 		window.setVisible(true);
 	}
+	
+	public void closeWindow() {
+		window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
+	}
 }

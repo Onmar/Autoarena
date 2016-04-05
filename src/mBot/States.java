@@ -7,7 +7,8 @@ public enum States {
     LINE_SEARCH(2),
     LINE_FOLLOW(3),
     PARKING(4),
-    AVOID_LINE(5);
+    AVOID_LINE(5),
+    GAME_START(6);
     
     private States(int i) {
         //Do something with i
