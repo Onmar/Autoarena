@@ -9,14 +9,21 @@ public class StepperMotor {
 	private final GpioController gpio = GpioFactory.getInstance();
 
 	private GpioStepperMotorComponent motor;
+	private GpioPinDigitalInput terminalSwitch_low;
+	private GpioPinDigitalInput terminalSwitch_high;
 
-	private byte[] forward_step_sequence = new byte[] { (byte) 0b10,
-			(byte) 0b11 };
+	private byte[] forward_step_sequence = new byte[] { (byte) 0b10, (byte) 0b11 };
 
-	private byte[] backward_step_sequence = new byte[] { (byte) 0b00,
-			(byte) 0b01 };
+	private byte[] backward_step_sequence = new byte[] { (byte) 0b00, (byte) 0b01 };
 
-	public StepperMotor(GpioPinDigitalOutput step, GpioPinDigitalOutput dir) {
+	private int currentPosition = Integer.MAX_VALUE;
+
+	public StepperMotor(Pin step_Pin, Pin dir_Pin, Pin terminalSwitch_low_Pin, Pin terminalSwitch_high_Pin) {
+
+		// Step Pin
+		GpioPinDigitalOutput step = gpio.provisionDigitalOutputPin(step_Pin, "StepperMotor_Step", PinState.LOW);
+		// Direction Pin
+		GpioPinDigitalOutput dir = gpio.provisionDigitalOutputPin(dir_Pin, "StepperMotor_Dir", PinState.LOW);
 
 		GpioPinDigitalOutput[] pins = new GpioPinDigitalOutput[] { dir, step };
 
@@ -25,12 +32,28 @@ public class StepperMotor {
 		this.motor = new GpioStepperMotorComponent(pins);
 		this.motor.setStepInterval(2);
 		this.motor.setStepSequence(forward_step_sequence);
-		this.motor.setStepsPerRevolution(3200);
+		this.motor.setStepsPerRevolution(800);
+
+		// Low end terminal switch;
+		if (terminalSwitch_low_Pin != null) {
+			GpioPinDigitalInput terminalSwitch_low = gpio.provisionDigitalInputPin(terminalSwitch_low_Pin,
+					PinPullResistance.PULL_DOWN);
+			this.terminalSwitch_low = terminalSwitch_low;
+			this.terminalSwitch_low.addListener(new StepperMotorPinListener(this, 0));
+			this.terminalSwitch_low.setDebounce(5);
+		}
+		// High end terminal switch
+		if (terminalSwitch_high_Pin != null) {
+			GpioPinDigitalInput terminalSwitch_high = gpio.provisionDigitalInputPin(terminalSwitch_high_Pin,
+					PinPullResistance.PULL_DOWN);
+			this.terminalSwitch_high = terminalSwitch_high;
+			this.terminalSwitch_high.addListener(new StepperMotorPinListener(this, Integer.MAX_VALUE));
+			this.terminalSwitch_high.setDebounce(5);
+		}
 	}
 
-	// speed in revolutions/min
-	public void setSpeed(double speed) {
-		this.motor.setStepInterval(Math.round(60000.0 / (speed * 800.0)));
+	public void setInterval(int interval) {
+		this.motor.setStepInterval(interval);
 	}
 
 	public void moveSteps(int steps, boolean forward) {
@@ -49,6 +72,25 @@ public class StepperMotor {
 			this.motor.setStepSequence(backward_step_sequence);
 		}
 		this.motor.rotate(revolutions);
+	}
+
+	public int getPosition() {
+		return this.currentPosition;
+	}
+
+	public void setPosition(int position) {
+		this.currentPosition = position;
+	}
+
+	public void moveToPosition(int position) {
+		if (position > this.getPosition()) {
+			this.motor.setStepSequence(forward_step_sequence);
+			this.motor.step(position - this.getPosition());
+		} else { // position <= this.getPosition()
+			this.motor.setStepSequence(backward_step_sequence);
+			this.motor.step(this.getPosition() - position);
+		}
+		this.currentPosition = position;
 	}
 
 	public boolean reachedPosition() {

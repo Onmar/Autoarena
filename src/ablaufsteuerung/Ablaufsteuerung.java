@@ -23,9 +23,9 @@ public class Ablaufsteuerung {
 			}
 			break;
 		case BALL_EINWURF:
-			io.IOHandler.ball_Motor = true;
+			IOHandler.startBallMotor();
 			if (io.IOHandler.ball_BallEingeworfen) {
-				io.IOHandler.ball_Motor = false;
+				IOHandler.stopBallMotor();
 				zustandBall = ZustaendeBall.BALL_VORHANDEN;
 				lastMilis = System.currentTimeMillis();
 			}
@@ -34,11 +34,11 @@ public class Ablaufsteuerung {
 			long currentMilis = System.currentTimeMillis();
 			Globals.spielzeit += (currentMilis - lastMilis);
 			lastMilis = currentMilis;
-			if (io.IOHandler.spieler1_Tor) {
+			if (IOHandler.spieler1_Tor) {
 				Globals.toreSpieler2++;
 				zustandBall = ZustaendeBall.KEIN_BALL;
 			} else {
-				if (io.IOHandler.spieler2_Tor) {
+				if (IOHandler.spieler2_Tor) {
 					Globals.toreSpieler1++;
 					zustandBall = ZustaendeBall.KEIN_BALL;
 				}
