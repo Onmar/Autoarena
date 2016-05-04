@@ -1,17 +1,20 @@
 package io;
 
 import java.awt.EventQueue;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.NumberFormat;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
+
 import javax.swing.JCheckBox;
 import javax.swing.BoxLayout;
+import javax.swing.JFormattedTextField;
 
 public class IOHandlerSim {
 
@@ -37,6 +40,7 @@ public class IOHandlerSim {
 	 * Create the application.
 	 */
 	public IOHandlerSim() {
+		IOHandler.init(false);
 		initialize();
 	}
 
@@ -55,22 +59,22 @@ public class IOHandlerSim {
 		JLabel spieler1_Title = new JLabel("Spieler1");
 		spieler1.add(spieler1_Title);
 
-		JButton spieler1_NewGame = new JButton("NewGame");
+		JCheckBox spieler1_NewGame = new JCheckBox("NewGame");
+		spieler1_NewGame.setEnabled(false);
 		spieler1.add(spieler1_NewGame);
 
-		JButton spieler1_Tor = new JButton("Tor");
+		JCheckBox spieler1_Tor = new JCheckBox("Tor");
+		spieler1_Tor.setEnabled(false);
 		spieler1.add(spieler1_Tor);
 
 		JSpinner spieler1_JoystickL = new JSpinner();
+		spieler1_JoystickL.setEnabled(false);
 		spieler1_JoystickL.setToolTipText("spieler1_JoystickL");
-		spieler1_JoystickL.setModel(
-				new SpinnerNumberModel(0.0, /* -IOHandler.joystickAmplitude / 2 */ -512.0, /* IOHandler.joystickAmplitude / 2 */ 512.0, 1));
 		spieler1.add(spieler1_JoystickL);
 
 		JSpinner spieler1_JoystickR = new JSpinner();
+		spieler1_JoystickR.setEnabled(false);
 		spieler1_JoystickR.setToolTipText("spieler1_JoystickR");
-		spieler1_JoystickR.setModel(
-				new SpinnerNumberModel(0.0, /* -IOHandler.joystickAmplitude / 2 */ -512.9, /* IOHandler.joystickAmplitude / 2 */ 512.0, 1));
 		spieler1.add(spieler1_JoystickR);
 
 		JPanel spieler2 = new JPanel();
@@ -79,48 +83,47 @@ public class IOHandlerSim {
 		JLabel spieler2_Title = new JLabel("Spieler2");
 		spieler2.add(spieler2_Title);
 
-		JButton spieler2_NewGame = new JButton("NewGame");
+		JCheckBox spieler2_NewGame = new JCheckBox("NewGame");
+		spieler2_NewGame.setEnabled(false);
 		spieler2.add(spieler2_NewGame);
 
-		JButton spieler2_Tor = new JButton("Tor");
+		JCheckBox spieler2_Tor = new JCheckBox("Tor");
+		spieler2_Tor.setEnabled(false);
 		spieler2.add(spieler2_Tor);
 
 		JSpinner spieler2_JoystickL = new JSpinner();
+		spieler2_JoystickL.setEnabled(false);
 		spieler2_JoystickL.setToolTipText("spieler2_JoystickL");
-		spieler2_JoystickL.setModel(
-				new SpinnerNumberModel(0.0, /* -IOHandler.joystickAmplitude / 2 */ -512.0, /* IOHandler.joystickAmplitude / 2 */ 512.0, 1.0));
 		spieler2.add(spieler2_JoystickL);
 
 		JSpinner spieler2_JoystickR = new JSpinner();
+		spieler2_JoystickR.setEnabled(false);
 		spieler2_JoystickR.setToolTipText("spieler2_JoystickR");
-		spieler2_JoystickR.setModel(
-				new SpinnerNumberModel(0.0, /* -IOHandler.joystickAmplitude / 2 */ -512.0, /* IOHandler.joystickAmplitude / 2 */ 512.0, 1.0));
 		spieler2.add(spieler2_JoystickR);
 
-		JPanel ladeBoxPos = new JPanel();
-		frame.getContentPane().add(ladeBoxPos);
+		JPanel ladeBoxMot = new JPanel();
+		frame.getContentPane().add(ladeBoxMot);
 
-		JLabel ladeBoxPos_Title = new JLabel("LadeBox_Position");
-		ladeBoxPos.add(ladeBoxPos_Title);
+		JLabel ladeBoxMotor_Title = new JLabel("LadeBox_Position");
+		ladeBoxMot.add(ladeBoxMotor_Title);
 
-		JComboBox<LagerPosition> ladeBoxPos_SollPosition = new JComboBox<LagerPosition>();
-		ladeBoxPos_SollPosition.setModel(new DefaultComboBoxModel<LagerPosition>(LagerPosition.values()));
-		ladeBoxPos_SollPosition.setSelectedIndex(0);
-		ladeBoxPos.add(ladeBoxPos_SollPosition);
+		JCheckBox ladeBoxMot_PosReached = new JCheckBox("Position Reached");
+		ladeBoxMot_PosReached.setEnabled(false);
+		ladeBoxMot.add(ladeBoxMot_PosReached);
 
-		JComboBox<LagerPosition> ladeBoxPos_IstPositition = new JComboBox<LagerPosition>();
-		ladeBoxPos_IstPositition.setEnabled(false);
-		ladeBoxPos_IstPositition.setModel(new DefaultComboBoxModel<LagerPosition>(LagerPosition.values()));
-		ladeBoxPos_IstPositition.setSelectedIndex(0);
-		ladeBoxPos.add(ladeBoxPos_IstPositition);
-		
-		JCheckBox ladeBoxPos_MotorL = new JCheckBox("MotorL");
-		ladeBoxPos_MotorL.setEnabled(false);
-		ladeBoxPos.add(ladeBoxPos_MotorL);
-		
-		JCheckBox ladeBoxPos_MotorR = new JCheckBox("MotorR");
-		ladeBoxPos_MotorR.setEnabled(false);
-		ladeBoxPos.add(ladeBoxPos_MotorR);
+		NumberFormat integerFormat = NumberFormat.getIntegerInstance();
+		JFormattedTextField ladeBoxMot_Pos = new JFormattedTextField(integerFormat);
+		ladeBoxMot_Pos.setColumns(10);
+		ladeBoxMot_Pos.setValue(new Integer(0));
+		ladeBoxMot.add(ladeBoxMot_Pos);
+
+		JButton ladeBoxMot_GoToPos = new JButton("GoTo Position");
+		ladeBoxMot_GoToPos.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				IOHandler.setLadeBoxSollPosition(((Number)ladeBoxMot_Pos.getValue()).intValue());
+			}
+		});
+		ladeBoxMot.add(ladeBoxMot_GoToPos);
 
 		JPanel ladeBoxSensor = new JPanel();
 		frame.getContentPane().add(ladeBoxSensor);
@@ -128,29 +131,21 @@ public class IOHandlerSim {
 		JLabel ladeBoxSensor_Title = new JLabel("LadeBox_SensorHinten");
 		ladeBoxSensor.add(ladeBoxSensor_Title);
 
-		JButton ladeBoxSensor_mBot1 = new JButton("mBot1");
+		JCheckBox ladeBoxSensor_mBot1 = new JCheckBox("mBot1");
+		ladeBoxSensor_mBot1.setEnabled(false);
 		ladeBoxSensor.add(ladeBoxSensor_mBot1);
 
-		JButton ladeBoxSensor_mBot2 = new JButton("mBot2");
+		JCheckBox ladeBoxSensor_mBot2 = new JCheckBox("mBot2");
+		ladeBoxSensor_mBot2.setEnabled(false);
 		ladeBoxSensor.add(ladeBoxSensor_mBot2);
 
-		JButton ladeBoxSensor_mBot3 = new JButton("mBot3");
+		JCheckBox ladeBoxSensor_mBot3 = new JCheckBox("mBot3");
+		ladeBoxSensor_mBot3.setEnabled(false);
 		ladeBoxSensor.add(ladeBoxSensor_mBot3);
 
-		JPanel ladeBoxTor = new JPanel();
-		frame.getContentPane().add(ladeBoxTor);
-
-		JLabel ladeBoxTor_Title = new JLabel("LadeBox_TorSensor");
-		ladeBoxTor.add(ladeBoxTor_Title);
-
-		JButton ladeBoxTor_mBot1 = new JButton("mBot1");
-		ladeBoxTor.add(ladeBoxTor_mBot1);
-
-		JButton ladeBoxTor_mBot2 = new JButton("mBot2");
-		ladeBoxTor.add(ladeBoxTor_mBot2);
-
-		JButton ladeBoxTor_mBot3 = new JButton("mBot3");
-		ladeBoxTor.add(ladeBoxTor_mBot3);
+		JCheckBox ladeBoxSensor_Tor = new JCheckBox("Tor");
+		ladeBoxSensor_Tor.setEnabled(false);
+		ladeBoxSensor.add(ladeBoxSensor_Tor);
 
 		JPanel ball = new JPanel();
 		frame.getContentPane().add(ball);
@@ -158,15 +153,51 @@ public class IOHandlerSim {
 		JLabel ball_Title = new JLabel("ballRueckfuehrung");
 		ball.add(ball_Title);
 
-		JCheckBox ball_Motor = new JCheckBox("Motor");
-		ball_Motor.setEnabled(false);
+		JButton ball_Motor = new JButton("Motor");
+		ball_Motor.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				IOHandler.startBallMotor();
+			}
+			
+			public void mouseReleased(MouseEvent e) {
+				IOHandler.stopBallMotor();
+			}
+		});
 		ball.add(ball_Motor);
 
-		JButton ball_BallEingeworfen = new JButton("BallEingeworfen");
-		ball.add(ball_BallEingeworfen);
+		JCheckBox ball_Sensor = new JCheckBox("Sensor");
+		ball_Sensor.setEnabled(false);
+		ball.add(ball_Sensor);
 		
-		JPanel panel = new JPanel();
-		frame.getContentPane().add(panel);
+		Thread update = new Thread() {
+			@Override
+			public void run() {
+				spieler1_NewGame.setSelected(IOHandler.spieler1_NeuerBall);
+				spieler1_Tor.setSelected(IOHandler.spieler1_Tor);
+				spieler2_NewGame.setSelected(IOHandler.spieler2_NeuerBall);
+				spieler2_NewGame.setSelected(IOHandler.spieler2_Tor);
+				spieler1_JoystickL.setValue(IOHandler.spieler1_JoystickL);
+				spieler1_JoystickR.setValue(IOHandler.spieler1_JoystickR);
+				spieler2_JoystickL.setValue(IOHandler.spieler2_JoystickL);
+				spieler2_JoystickR.setValue(IOHandler.spieler2_JoystickR);
+				
+				ladeBoxMot_PosReached.setSelected(IOHandler.positionReached());
+				
+				ladeBoxSensor_mBot1.setSelected(IOHandler.ladeBoxen_Sensoren[0]);
+				ladeBoxSensor_mBot2.setSelected(IOHandler.ladeBoxen_Sensoren[1]);
+				ladeBoxSensor_mBot3.setSelected(IOHandler.ladeBoxen_Sensoren[2]);
+				ladeBoxSensor_Tor.setSelected(IOHandler.ladeBoxen_SensorTor);
+				
+				ball_Sensor.setSelected(IOHandler.ball_BallEingeworfen);
+				
+				try {
+					TimeUnit.MILLISECONDS.sleep(20);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		update.start();
 	}
 
 }

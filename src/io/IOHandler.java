@@ -300,6 +300,17 @@ public class IOHandler {
 			IOHandler.ladeBoxen_Motor.moveToPosition(newPosition.position());
 		}
 	}
+	
+	public static void setLadeBoxSollPosition(int newPosition) {
+			while (!IOHandler.ladeBoxen_Motor.reachedPosition()) {
+				try {
+					TimeUnit.MILLISECONDS.sleep(50);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			IOHandler.ladeBoxen_Motor.moveToPosition(newPosition);
+	}
 
 	public static boolean positionReached() {
 		return IOHandler.ladeBoxen_Motor.reachedPosition();
