@@ -166,6 +166,7 @@ public class IOHandler {
 			}
 		});
 		spieler1_NeuerBall.setDebounce(10);
+		IOHandler.spieler1_NeuerBall = spieler1_NeuerBall.isHigh();
 
 		// spieler2_NeuerBall
 		final GpioPinDigitalInput spieler2_NeuerBall = gpio.provisionDigitalInputPin(IOList.spieler2_NeuerBall,
@@ -177,6 +178,7 @@ public class IOHandler {
 			}
 		});
 		spieler2_NeuerBall.setDebounce(10);
+		IOHandler.spieler2_NeuerBall = spieler2_NeuerBall.isHigh();
 
 		// spieler1_Tor
 		final GpioPinDigitalInput spieler1_Tor = gpio.provisionDigitalInputPin(IOList.spieler1_Tor,
@@ -188,6 +190,7 @@ public class IOHandler {
 			}
 		});
 		spieler1_Tor.setDebounce(10);
+		IOHandler.spieler1_Tor = spieler1_Tor.isHigh();
 
 		// spieler2_Tor
 		final GpioPinDigitalInput spieler2_Tor = gpio.provisionDigitalInputPin(IOList.spieler2_Tor,
@@ -199,6 +202,7 @@ public class IOHandler {
 			}
 		});
 		spieler2_Tor.setDebounce(10);
+		IOHandler.spieler2_Tor = spieler2_Tor.isHigh();
 
 		{
 			// ladeBoxen_Sensoren
@@ -274,21 +278,13 @@ public class IOHandler {
 
 		// Outputs Ende
 		// Send Motor to reference Point
-		IOHandler.ladeBoxen_Motor.moveToPosition(0);
 		if (!debug) {
-			while (!IOHandler.ladeBoxen_Motor.reachedPosition()) {
-				try {
-					TimeUnit.MILLISECONDS.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
+			IOHandler.ladeBoxen_Motor.toZero();
 			IOHandler.ladeBoxen_Motor.moveToPosition(LagerPosition.TOR.position());
 		}
 	}
 
 	public static void setLadeBoxSollPosition(LagerPosition newPosition) {
-		ladeBoxen_SollPosition = newPosition;
 		if (newPosition != ladeBoxen_SollPosition && newPosition != LagerPosition.UNKNOWN) {
 			while (!IOHandler.ladeBoxen_Motor.reachedPosition()) {
 				try {
@@ -297,6 +293,7 @@ public class IOHandler {
 					e.printStackTrace();
 				}
 			}
+			ladeBoxen_SollPosition = newPosition;
 			IOHandler.ladeBoxen_Motor.moveToPosition(newPosition.position());
 		}
 	}
@@ -316,12 +313,16 @@ public class IOHandler {
 		return IOHandler.ladeBoxen_Motor.reachedPosition();
 	}
 	
+	public static LagerPosition getLadeBoxSollPosition() {
+		return ladeBoxen_SollPosition;
+	}
+	
 	public static void startBallMotor() {
-		ball_Motor.high();
+		ball_Motor.low();
 	}
 	
 	public static void stopBallMotor() {
-		ball_Motor.low();
+		ball_Motor.high();
 	}
 
 	public static void closeAll() {

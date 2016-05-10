@@ -17,9 +17,13 @@ public class MBotSteuerung {
 	private static int Spieler1_mBotIndex = 0;
 	// Array Index of mBot currently used by player 2.
 	private static int Spieler2_mBotIndex = 0;
+	
+	public static ZustaendeSteuerung getMBotControlState() {
+		return zustand;
+	}
 
 	// Gibt die skalierte Geschwindigkeit zurueck.
-	private static int getSpeed(int joystickValue, int deadzonePos, int deadzoneNeg, int minMotorSpeedPos,
+	public static int getSpeed(int joystickValue, int deadzonePos, int deadzoneNeg, int minMotorSpeedPos,
 			int minMotorSpeedNeg) {
 		int speed;
 		if (IOHandler.spieler1_JoystickL > 0) {
@@ -47,7 +51,7 @@ public class MBotSteuerung {
 	}
 
 	// Gibt die Bewegungsrichtung zurueck
-	private static MotorDirection getDirection(int joystickValueL, int joystickValueR) {
+	public static MotorDirection getDirection(int joystickValueL, int joystickValueR) {
 		MotorDirection direction;
 		if (joystickValueL > 0) {
 			if (joystickValueR > 0) {

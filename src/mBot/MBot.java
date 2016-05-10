@@ -3,12 +3,13 @@ package mBot;
 import java.io.IOException;
 
 import bluetooth.BluetoothClient;
+import bluetooth.RFCOMMClient;
 
 public class MBot {
 
 	private boolean connected = false;
 	private String bluetoothAddress;
-	private BluetoothClient serialConn = new BluetoothClient();
+	private RFCOMMClient serialConn = new RFCOMMClient();
 
 	public MBot(String startBluetoothAddress) {
 		bluetoothAddress = startBluetoothAddress;
@@ -29,7 +30,6 @@ public class MBot {
 		if (!connected) {
 			try {
 				if (!bluetoothAddress.equals("Dummy")) {
-					this.disconnect();
 					connected = serialConn.connect("Makeblock",
 							bluetoothAddress);
 				} else {
@@ -71,23 +71,27 @@ public class MBot {
 			for (int i = 0; i < 10; i++) {
 				resetString += resetToken;
 			}
-			serialConn.writeString(resetString);
+			try {
+				serialConn.writeString(resetString);
+			} catch (IOException e) {
+				connected = false;
+			}
 		}
 	}
 
 	public void sendCommand(States state, int lSpeed, int rSpeed,
 			MotorDirection direction) {
 		if (connected) {
-			// char[] command = new char[] { (char) state.ordinal(), (char)
-			// rSpeed, (char) lSpeed,
-			// (char) direction.ordinal() };
-			// serialConn.writeChars(command);
 			String command = "";
 			command += (char) state.ordinal();
 			command += (char) rSpeed;
 			command += (char) lSpeed;
 			command += (char) direction.ordinal();
-			serialConn.writeString(command);
+			try {
+				serialConn.writeString(command);
+			} catch (IOException e) {
+				connected = false;
+			}
 		}
 	}
 }

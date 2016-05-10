@@ -10,9 +10,16 @@ public class Ablaufsteuerung {
 	private static ZustaendeSpiel zustandSpiel = ZustaendeSpiel.SPIEL_AUS;
 	private static ZustaendeBall zustandBall = ZustaendeBall.KEIN_BALL;
 	private static long lastMilis;
+	
+	// IOHandler.ball_BallEingeworfen of last cycle
+	private static boolean lastBallEingeworfen = IOHandler.ball_BallEingeworfen;
 
 	public static ZustaendeSpiel getGameState() {
 		return zustandSpiel;
+	}
+
+	public static ZustaendeBall getBallState() {
+		return zustandBall;
 	}
 
 	private static void laufendesSpiel() {
@@ -24,11 +31,12 @@ public class Ablaufsteuerung {
 			break;
 		case BALL_EINWURF:
 			IOHandler.startBallMotor();
-			if (io.IOHandler.ball_BallEingeworfen) {
+			if (IOHandler.ball_BallEingeworfen && !lastBallEingeworfen) {
 				IOHandler.stopBallMotor();
 				zustandBall = ZustaendeBall.BALL_VORHANDEN;
 				lastMilis = System.currentTimeMillis();
 			}
+			lastBallEingeworfen = IOHandler.ball_BallEingeworfen;
 			break;
 		case BALL_VORHANDEN:
 			long currentMilis = System.currentTimeMillis();
@@ -47,7 +55,7 @@ public class Ablaufsteuerung {
 		}
 	}
 
-	// Erstellen aller Verbindungen
+	// Erstellen der IO Verbindungen
 	public static void init() {
 		IOHandler.init(true);
 	}
@@ -71,8 +79,7 @@ public class Ablaufsteuerung {
 		case SPIEL_LAEUFT:
 			laufendesSpiel();
 			if ((Globals.spielzeit > TimeUnit.MINUTES.toMillis(5) || Globals.toreSpieler1 + Globals.toreSpieler2 >= 11)
-					&& (zustandBall == ZustaendeBall.KEIN_BALL || zustandBall == ZustaendeBall.KEIN_BALL)) {
-				
+					&& zustandBall == ZustaendeBall.KEIN_BALL) {
 				try {
 					TimeUnit.SECONDS.sleep(3);
 				} catch (InterruptedException e) {

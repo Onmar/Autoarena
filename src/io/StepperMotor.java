@@ -1,5 +1,7 @@
 package io;
 
+import java.util.concurrent.TimeUnit;
+
 import com.pi4j.component.motor.MotorState;
 import com.pi4j.component.motor.impl.GpioStepperMotorComponent;
 import com.pi4j.io.gpio.*;
@@ -12,9 +14,9 @@ public class StepperMotor {
 	private GpioPinDigitalInput terminalSwitch_low;
 	private GpioPinDigitalInput terminalSwitch_high;
 
-	private byte[] forward_step_sequence = new byte[] { (byte) 0b10, (byte) 0b11 };
+	private byte[] forward_step_sequence = new byte[] { (byte) 0b00, (byte) 0b01 };
 
-	private byte[] backward_step_sequence = new byte[] { (byte) 0b00, (byte) 0b01 };
+	private byte[] backward_step_sequence = new byte[] { (byte) 0b10, (byte) 0b11 };
 
 	private int currentPosition = Integer.MAX_VALUE;
 
@@ -25,14 +27,13 @@ public class StepperMotor {
 		// Direction Pin
 		GpioPinDigitalOutput dir = gpio.provisionDigitalOutputPin(dir_Pin, "StepperMotor_Dir", PinState.LOW);
 
-		GpioPinDigitalOutput[] pins = new GpioPinDigitalOutput[] { dir, step };
+		GpioPinDigitalOutput[] pins = new GpioPinDigitalOutput[] { step, dir };
 
 		gpio.setShutdownOptions(true, PinState.LOW, pins);
 
 		this.motor = new GpioStepperMotorComponent(pins);
-		this.motor.setStepInterval(2);
+		this.motor.setStepInterval(1);
 		this.motor.setStepSequence(forward_step_sequence);
-		this.motor.setStepsPerRevolution(800);
 
 		// Low end terminal switch;
 		if (terminalSwitch_low_Pin != null) {
@@ -52,7 +53,7 @@ public class StepperMotor {
 		}
 	}
 
-	public void setInterval(int interval) {
+	public void setInterval(long interval) {
 		this.motor.setStepInterval(interval);
 	}
 
@@ -65,15 +66,6 @@ public class StepperMotor {
 		this.motor.step(2 * steps);
 	}
 
-	public void moveRevolutions(double revolutions, boolean forward) {
-		if (forward) {
-			this.motor.setStepSequence(forward_step_sequence);
-		} else {
-			this.motor.setStepSequence(backward_step_sequence);
-		}
-		this.motor.rotate(revolutions);
-	}
-
 	public int getPosition() {
 		return this.currentPosition;
 	}
@@ -83,14 +75,19 @@ public class StepperMotor {
 	}
 
 	public void moveToPosition(int position) {
-		if (position > this.getPosition()) {
-			this.motor.setStepSequence(forward_step_sequence);
-			this.motor.step(position - this.getPosition());
-		} else { // position <= this.getPosition()
-			this.motor.setStepSequence(backward_step_sequence);
-			this.motor.step(this.getPosition() - position);
-		}
+		this.moveSteps(Math.abs(this.getPosition() - position), position > this.getPosition());
 		this.currentPosition = position;
+	}
+	
+	public void toZero() {
+		this.motor.setStepSequence(backward_step_sequence);
+		this.motor.setState(MotorState.FORWARD);
+		while(!this.reachedPosition()) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(20);
+			} catch (InterruptedException e) {
+			}
+		}
 	}
 
 	public boolean reachedPosition() {
@@ -98,7 +95,7 @@ public class StepperMotor {
 	}
 
 	public void stopMotor() {
-		this.motor.stop();
+		this.motor.setState(MotorState.STOP);
 	}
 
 	public void closeMotor() {

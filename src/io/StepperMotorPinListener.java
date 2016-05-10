@@ -15,7 +15,7 @@ public class StepperMotorPinListener implements GpioPinListenerDigital {
 
 	@Override
 	public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-		if (event.getState().isHigh()) {
+		if (event.getState().isLow()) {
 			this.motor.stopMotor();
 			this.motor.setPosition(stepCount);
 		}
