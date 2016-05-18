@@ -1,6 +1,6 @@
 package mBot;
 
-public enum States {
+public enum MBotCommandStates {
     
     STOP(0),
     DRIVE(1),
@@ -10,7 +10,7 @@ public enum States {
     AVOID_LINE(5),
     GAME_START(6);
     
-    private States(int i) {
+    private MBotCommandStates(int i) {
         //Do something with i
     }
 

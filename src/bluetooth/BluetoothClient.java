@@ -116,21 +116,21 @@ public class BluetoothClient implements DiscoveryListener {
 
     }
 
-    public void writeString(String message) {
+    public void write(String message) {
         if (pWriter != null) { // Devcie connected
             pWriter.write(message); // Write a String to the Buffer
             pWriter.flush(); // Send Buffer
         }
     }
 
-    public void writeChars(char[] chars) {
+    public void write(char[] chars) {
         if (pWriter != null && chars != null) { // Device connected
             pWriter.write(chars); // Write an Array of Chars to the Buffer
             pWriter.flush(); // Send Buffer
         }
     }
     
-    public void writeInt(int integer) {
+    public void write(int integer) {
     	if (pWriter != null) { // Device connected
     		pWriter.write(integer);
     		pWriter.flush();

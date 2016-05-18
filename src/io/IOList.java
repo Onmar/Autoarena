@@ -14,7 +14,7 @@ public class IOList {
 	public static final Pin spieler2_NeuerBall = RaspiPin.GPIO_23;
 	public static final Pin spieler1_Tor = RaspiPin.GPIO_21;
 	public static final Pin spieler2_Tor = RaspiPin.GPIO_22;
-	public static final Pin[] ladeBox_Sensoren = new Pin[] { RaspiPin.GPIO_27, RaspiPin.GPIO_28, RaspiPin.GPIO_29 };
+	public static final Pin[] ladeBox_Sensoren = new Pin[] { RaspiPin.GPIO_29, RaspiPin.GPIO_28, RaspiPin.GPIO_27 };
 	public static final Pin ladeBox_SensorTor = RaspiPin.GPIO_11;
 	public static final Pin ladeBox_StepperMotor_TerminalSwitch_low = RaspiPin.GPIO_03;
 	public static final Pin ball_BallEingeworfen = RaspiPin.GPIO_25;

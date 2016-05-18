@@ -12,13 +12,8 @@ import java.nio.charset.Charset;
 public class MBotTestWithGUI {
 
     private JFrame frame;
-    /*
-     * Bluetooth Addresses of mBots: 
-     * mBot1: 00:05:02:03:1D:D3 
-     * mBot2: 00:0D:19:03:06:E7
-     * mBot3: 00:0D:19:00:0B:08
-     */
     private static MBot[] mBots = new MBot[] { null, null, null };
+    private static MBotCommandStates driveState = MBotCommandStates.DRIVE;
 
     /**
      * Launch the application.
@@ -47,6 +42,7 @@ public class MBotTestWithGUI {
     public MBotTestWithGUI() {
         initialize();
     }
+    
 
     /**
      * Initialize the contents of the frame.
@@ -61,10 +57,12 @@ public class MBotTestWithGUI {
         // Control Panel
         JPanel controlPanel = new JPanel();
         final JButton connect = new JButton("Connect");
+        JButton drive = new JButton("Drive");
         JButton sync = new JButton("Sync");
         JButton lineFollow = new JButton("Line Follow");
         JButton lineSearch = new JButton("Line Search");
         JButton parking = new JButton("Parking");
+        JButton gameStart = new JButton("GameStart");
         JButton stop = new JButton("Stop");
 
         // Steering Panel
@@ -114,6 +112,13 @@ public class MBotTestWithGUI {
                 }
             }
         });
+        
+        // Drive
+        drive.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                driveState = MBotCommandStates.DRIVE;
+            }
+        });
 
         // Sync Button
         sync.addActionListener(new java.awt.event.ActionListener() {
@@ -124,28 +129,35 @@ public class MBotTestWithGUI {
         // Line Follow
         lineFollow.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                mBots[comboBox.getSelectedIndex()].sendCommand(States.LINE_FOLLOW, 200, 200, MotorDirection.FORWARD);
+                mBots[comboBox.getSelectedIndex()].sendCommand(MBotCommandStates.LINE_FOLLOW, 200, 200, MotorDirection.FORWARD);
             }
         });
 
         // Line Search
         lineSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                mBots[comboBox.getSelectedIndex()].sendCommand(States.LINE_SEARCH, 200, 200, MotorDirection.FORWARD);
+                mBots[comboBox.getSelectedIndex()].sendCommand(MBotCommandStates.LINE_SEARCH, 200, 200, MotorDirection.FORWARD);
             }
         });
 
         // Parking
         parking.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                mBots[comboBox.getSelectedIndex()].sendCommand(States.PARKING, 200, 200, MotorDirection.FORWARD);
+                mBots[comboBox.getSelectedIndex()].sendCommand(MBotCommandStates.PARKING, 200, 200, MotorDirection.FORWARD);
+            }
+        });
+        
+     // Game Start
+        gameStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                driveState = MBotCommandStates.GAME_START;
             }
         });
 
         // Stop
         stop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                mBots[comboBox.getSelectedIndex()].sendCommand(States.STOP, 200, 200, MotorDirection.STOP);
+                mBots[comboBox.getSelectedIndex()].sendCommand(MBotCommandStates.STOP, 200, 200, MotorDirection.STOP);
             }
         });
 
@@ -157,52 +169,54 @@ public class MBotTestWithGUI {
         // Up Button
         up.addMouseListener(new MouseAdapter() { // OnClick Action
             public void mousePressed(MouseEvent e) {
-                mBots[comboBox.getSelectedIndex()].sendCommand(States.DRIVE, 200, 200, MotorDirection.FORWARD);
+                mBots[comboBox.getSelectedIndex()].sendCommand(driveState, 200, 200, MotorDirection.FORWARD);
             }
 
             public void mouseReleased(MouseEvent e) {
-                mBots[comboBox.getSelectedIndex()].sendCommand(States.STOP, 0, 0, MotorDirection.STOP);
+                mBots[comboBox.getSelectedIndex()].sendCommand(MBotCommandStates.STOP, 0, 0, MotorDirection.STOP);
             }
         });
         // Left Button
         left.addMouseListener(new MouseAdapter() { // OnClick Action
             public void mousePressed(MouseEvent e) {
-                mBots[comboBox.getSelectedIndex()].sendCommand(States.DRIVE, 100, 100, MotorDirection.LEFT);
+                mBots[comboBox.getSelectedIndex()].sendCommand(driveState, 150, 150, MotorDirection.LEFT);
             }
 
             public void mouseReleased(MouseEvent e) {
-                mBots[comboBox.getSelectedIndex()].sendCommand(States.STOP, 0, 0, MotorDirection.STOP);
+                mBots[comboBox.getSelectedIndex()].sendCommand(MBotCommandStates.STOP, 0, 0, MotorDirection.STOP);
             }
         });
 
         // Right Button
         right.addMouseListener(new MouseAdapter() { // OnClick Action
             public void mousePressed(MouseEvent e) {
-                mBots[comboBox.getSelectedIndex()].sendCommand(States.DRIVE, 100, 100, MotorDirection.RIGHT);
+                mBots[comboBox.getSelectedIndex()].sendCommand(driveState, 150, 150, MotorDirection.RIGHT);
             }
 
             public void mouseReleased(MouseEvent e) {
-                mBots[comboBox.getSelectedIndex()].sendCommand(States.STOP, 0, 0, MotorDirection.STOP);
+                mBots[comboBox.getSelectedIndex()].sendCommand(MBotCommandStates.STOP, 0, 0, MotorDirection.STOP);
             }
         });
 
         // Down Button
         down.addMouseListener(new MouseAdapter() { // OnClick Action
             public void mousePressed(MouseEvent e) {
-                mBots[comboBox.getSelectedIndex()].sendCommand(States.DRIVE, 200, 200, MotorDirection.BACKWARD);
+                mBots[comboBox.getSelectedIndex()].sendCommand(driveState, 200, 200, MotorDirection.BACKWARD);
             }
 
             public void mouseReleased(MouseEvent e) {
-                mBots[comboBox.getSelectedIndex()].sendCommand(States.STOP, 0, 0, MotorDirection.STOP);
+                mBots[comboBox.getSelectedIndex()].sendCommand(MBotCommandStates.STOP, 0, 0, MotorDirection.STOP);
             }
         });
 
         frame.getContentPane().add(comboBox, BorderLayout.NORTH);
         controlPanel.add(sync);
+        controlPanel.add(drive);
         controlPanel.add(lineFollow);
         controlPanel.add(lineSearch);
         controlPanel.add(parking);
         controlPanel.add(stop);
+        controlPanel.add(gameStart);
         controlPanel.add(connect);
         frame.getContentPane().add(controlPanel, BorderLayout.CENTER);
         steeringPanel.add(up);

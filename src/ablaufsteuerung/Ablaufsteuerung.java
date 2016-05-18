@@ -2,6 +2,8 @@ package ablaufsteuerung;
 
 import java.util.concurrent.TimeUnit;
 
+import display.Colors;
+
 import io.IOHandler;
 import master.Globals;
 
@@ -12,7 +14,7 @@ public class Ablaufsteuerung {
 	private static long lastMilis;
 	
 	// IOHandler.ball_BallEingeworfen of last cycle
-	private static boolean lastBallEingeworfen = IOHandler.ball_BallEingeworfen;
+	private static boolean lastBallEingeworfen = true;
 
 	public static ZustaendeSpiel getGameState() {
 		return zustandSpiel;
@@ -34,6 +36,10 @@ public class Ablaufsteuerung {
 			if (IOHandler.ball_BallEingeworfen && !lastBallEingeworfen) {
 				IOHandler.stopBallMotor();
 				zustandBall = ZustaendeBall.BALL_VORHANDEN;
+				try {
+					TimeUnit.MILLISECONDS.sleep(100);
+				} catch (InterruptedException e) {
+				}
 				lastMilis = System.currentTimeMillis();
 			}
 			lastBallEingeworfen = IOHandler.ball_BallEingeworfen;
@@ -57,7 +63,7 @@ public class Ablaufsteuerung {
 
 	// Erstellen der IO Verbindungen
 	public static void init() {
-		IOHandler.init(true);
+		IOHandler.init(false);
 	}
 
 	// Statusmaschine
@@ -71,6 +77,7 @@ public class Ablaufsteuerung {
 		case SPIEL_INIT:
 			Globals.ausparken = true;
 			if (Globals.mBotsBereit) {
+				Globals.ausparkzeit = System.currentTimeMillis();
 				Globals.ausparken = false;
 				Globals.mBotsBereit = false;
 				zustandSpiel = ZustaendeSpiel.SPIEL_LAEUFT;
@@ -78,16 +85,24 @@ public class Ablaufsteuerung {
 			break;
 		case SPIEL_LAEUFT:
 			laufendesSpiel();
-			if ((Globals.spielzeit > TimeUnit.MINUTES.toMillis(5) || Globals.toreSpieler1 + Globals.toreSpieler2 >= 11)
+			if ((Globals.spielzeit > TimeUnit.MINUTES.toMillis(3) || Globals.toreSpieler1 + Globals.toreSpieler2 >= 5)
 					&& zustandBall == ZustaendeBall.KEIN_BALL) {
-				try {
-					TimeUnit.SECONDS.sleep(3);
-				} catch (InterruptedException e) {
-				}
 				zustandSpiel = ZustaendeSpiel.SPIEL_FERTIG;
 			}
 			break;
 		case SPIEL_FERTIG:
+			if((System.currentTimeMillis() - Globals.ausparkzeit) > Globals.maxAusparkzeit) {
+				zustandSpiel = ZustaendeSpiel.EINPARKEN;
+			} else {
+				if (IOHandler.spieler1_NeuerBall && IOHandler.spieler2_NeuerBall) {
+					Globals.toreSpieler1 = 0;
+					Globals.toreSpieler2 = 0;
+					Globals.spielzeit = 0;
+					zustandSpiel = ZustaendeSpiel.SPIEL_LAEUFT;
+				}
+			}
+			break;
+		case EINPARKEN:
 			Globals.einparken = true;
 			if (Globals.mBotsGeparkt) {
 				Globals.einparken = false;
@@ -95,6 +110,8 @@ public class Ablaufsteuerung {
 				Globals.toreSpieler1 = 0;
 				Globals.toreSpieler2 = 0;
 				Globals.spielzeit = 0;
+				Globals.mBotSpieler1 = Colors.WHITE;
+				Globals.mBotSpieler2 = Colors.WHITE;
 				Globals.round++;
 				zustandSpiel = ZustaendeSpiel.SPIEL_AUS;
 			}

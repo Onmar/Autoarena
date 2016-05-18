@@ -2,7 +2,6 @@ package mBot;
 
 import java.io.IOException;
 
-import bluetooth.BluetoothClient;
 import bluetooth.RFCOMMClient;
 
 public class MBot {
@@ -72,23 +71,23 @@ public class MBot {
 				resetString += resetToken;
 			}
 			try {
-				serialConn.writeString(resetString);
+				serialConn.write(resetString);
 			} catch (IOException e) {
 				connected = false;
 			}
 		}
 	}
 
-	public void sendCommand(States state, int lSpeed, int rSpeed,
+	public void sendCommand(MBotCommandStates state, int lSpeed, int rSpeed,
 			MotorDirection direction) {
 		if (connected) {
-			String command = "";
-			command += (char) state.ordinal();
-			command += (char) rSpeed;
-			command += (char) lSpeed;
-			command += (char) direction.ordinal();
+			byte[] command = new byte[4];
+			command[0] = (byte) state.ordinal();
+			command[1] = (byte) rSpeed;
+			command[2] = (byte) lSpeed;
+			command[3] = (byte) direction.ordinal();
 			try {
-				serialConn.writeString(command);
+				serialConn.write(command);
 			} catch (IOException e) {
 				connected = false;
 			}

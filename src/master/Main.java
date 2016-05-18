@@ -1,9 +1,6 @@
 package master;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.Timer;
+import java.util.concurrent.TimeUnit;
 
 import ablaufsteuerung.Ablaufsteuerung;
 import display.Scoreboard;
@@ -13,39 +10,50 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		Ablaufsteuerung.init();
-		MBotSteuerung.init();
-
-		ActionListener ablaufsteuerung = new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				Ablaufsteuerung.run();
+		Thread scoreboard = new Thread() {
+			public void run() {
+				Scoreboard window = new Scoreboard();
+				window.setVisible(true);
+				while (!Globals.stop) {
+				}
 			}
 		};
-		Timer ablaufsteuerungTimer = new Timer(20, ablaufsteuerung);
 
-		ActionListener mBotSteuerung = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				MBotSteuerung.run();
+		Thread ablaufsteuerung = new Thread() {
+			public void run() {
+				Ablaufsteuerung.init();
+				while(!Globals.stop) {
+					Ablaufsteuerung.run();
+					try {
+						TimeUnit.MILLISECONDS.sleep(20);
+					} catch (InterruptedException e) {
+					}
+				}
+				Ablaufsteuerung.close();
+				
 			}
 		};
-		Timer mBotSteuerungTimer = new Timer(20, mBotSteuerung);
 
-		Scoreboard window = new Scoreboard();
-		window.setVisible(true);
+		Thread mBotSteuerung = new Thread() {
+			public void run() {
+				MBotSteuerung.init();
+				while(!Globals.stop) {
+					MBotSteuerung.run();
+					try {
+						TimeUnit.MILLISECONDS.sleep(20);
+					} catch (InterruptedException e) {
+					}
+				}
+				MBotSteuerung.close();
+			}
+		};
 
-		ablaufsteuerungTimer.start();
-		mBotSteuerungTimer.start();
+		scoreboard.start();
+		ablaufsteuerung.start();
+		mBotSteuerung.start();
 
 		while (!Globals.stop) {
 		}
-
-		ablaufsteuerungTimer.stop();
-		mBotSteuerungTimer.stop();
-
-		Ablaufsteuerung.close();
-		MBotSteuerung.close();
-		window.closeWindow();
 
 	}
 

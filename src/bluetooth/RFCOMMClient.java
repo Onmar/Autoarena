@@ -4,10 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import master.Globals;
 
 public class RFCOMMClient {
@@ -30,9 +26,15 @@ public class RFCOMMClient {
 		return false;
 	}
 
-	public void writeString(String message) throws IOException {
+	public void write(String message) throws IOException {
 		if (connected) {
-			out.write(message.getBytes());
+			out.write(message.getBytes(Charset.forName("windows-1252")));
+		}
+	}
+	
+	public void write(byte[] bytes) throws IOException {
+		if(connected) {
+			out.write(bytes);
 		}
 	}
 

@@ -75,7 +75,7 @@ public class IOHandler {
 				public void handleGpioPinAnalogValueChangeEvent(GpioPinAnalogValueChangeEvent event) {
 					if (event.getValue() > 0.0) {
 						int value = (int) Math
-								.round(((event.getValue() * 4.096) / ADS1115GpioProvider.ADS1115_RANGE_MAX_VALUE) / 3.4
+								.round(((event.getValue() * 4.096) / ADS1115GpioProvider.ADS1115_RANGE_MAX_VALUE) / 3.3
 										* joystickAmplitude)
 								- (joystickAmplitude / 2);
 						if (value > (joystickAmplitude / 2)) {
@@ -85,7 +85,7 @@ public class IOHandler {
 								value = -((joystickAmplitude / 2) - 1);
 							}
 						}
-						IOHandler.spieler1_JoystickL = value;
+						IOHandler.spieler1_JoystickL = -value;
 					}
 				}
 			});
@@ -95,7 +95,7 @@ public class IOHandler {
 				public void handleGpioPinAnalogValueChangeEvent(GpioPinAnalogValueChangeEvent event) {
 					if (event.getValue() > 0.0) {
 						int value = (int) Math
-								.round(((event.getValue() * 4.096) / ADS1115GpioProvider.ADS1115_RANGE_MAX_VALUE) / 3.4
+								.round(((event.getValue() * 4.096) / ADS1115GpioProvider.ADS1115_RANGE_MAX_VALUE) / 3.3
 										* joystickAmplitude)
 								- (joystickAmplitude / 2);
 						if (value > (joystickAmplitude / 2)) {
@@ -115,7 +115,7 @@ public class IOHandler {
 				public void handleGpioPinAnalogValueChangeEvent(GpioPinAnalogValueChangeEvent event) {
 					if (event.getValue() > 0.0) {
 						int value = (int) Math
-								.round(((event.getValue() * 4.096) / ADS1115GpioProvider.ADS1115_RANGE_MAX_VALUE) / 3.4
+								.round(((event.getValue() * 4.096) / ADS1115GpioProvider.ADS1115_RANGE_MAX_VALUE) / 3.3
 										* joystickAmplitude)
 								- (joystickAmplitude / 2);
 						if (value > (joystickAmplitude / 2)) {
@@ -125,7 +125,7 @@ public class IOHandler {
 								value = -((joystickAmplitude / 2) - 1);
 							}
 						}
-						IOHandler.spieler2_JoystickL = value;
+						IOHandler.spieler2_JoystickL = -value;
 					}
 				}
 			});
@@ -135,7 +135,7 @@ public class IOHandler {
 				public void handleGpioPinAnalogValueChangeEvent(GpioPinAnalogValueChangeEvent event) {
 					if (event.getValue() > 0.0) {
 						int value = (int) Math
-								.round(((event.getValue() * 4.096) / ADS1115GpioProvider.ADS1115_RANGE_MAX_VALUE) / 3.4
+								.round(((event.getValue() * 4.096) / ADS1115GpioProvider.ADS1115_RANGE_MAX_VALUE) / 3.3
 										* joystickAmplitude)
 								- (joystickAmplitude / 2);
 						if (value > (joystickAmplitude / 2)) {
@@ -145,7 +145,7 @@ public class IOHandler {
 								value = -((joystickAmplitude / 2) - 1);
 							}
 						}
-						IOHandler.spieler2_JoystickR = value;
+						IOHandler.spieler2_JoystickR = -value;
 					}
 				}
 			});
@@ -186,11 +186,11 @@ public class IOHandler {
 		spieler1_Tor.addListener(new GpioPinListenerDigital() {
 			@Override
 			public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-				IOHandler.spieler1_Tor = event.getState().isHigh();
+				IOHandler.spieler1_Tor = event.getState().isLow();
 			}
 		});
-		spieler1_Tor.setDebounce(10);
-		IOHandler.spieler1_Tor = spieler1_Tor.isHigh();
+		spieler1_Tor.setDebounce(100);
+		IOHandler.spieler1_Tor = spieler1_Tor.isLow();
 
 		// spieler2_Tor
 		final GpioPinDigitalInput spieler2_Tor = gpio.provisionDigitalInputPin(IOList.spieler2_Tor,
@@ -198,11 +198,11 @@ public class IOHandler {
 		spieler2_Tor.addListener(new GpioPinListenerDigital() {
 			@Override
 			public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-				IOHandler.spieler2_Tor = event.getState().isHigh();
+				IOHandler.spieler2_Tor = event.getState().isLow();
 			}
 		});
-		spieler2_Tor.setDebounce(10);
-		IOHandler.spieler2_Tor = spieler2_Tor.isHigh();
+		spieler2_Tor.setDebounce(100);
+		IOHandler.spieler2_Tor = spieler2_Tor.isLow();
 
 		{
 			// ladeBoxen_Sensoren
@@ -218,6 +218,7 @@ public class IOHandler {
 				}
 			});
 			ladeBoxen_Sensoren[0].setDebounce(10);
+			IOHandler.ladeBoxen_Sensoren[0] = ladeBoxen_Sensoren[0].isHigh();
 
 			// ladeBoxen_Sensoren[1]
 			ladeBoxen_Sensoren[1] = gpio.provisionDigitalInputPin(IOList.ladeBox_Sensoren[1],
@@ -229,6 +230,7 @@ public class IOHandler {
 				}
 			});
 			ladeBoxen_Sensoren[1].setDebounce(10);
+			IOHandler.ladeBoxen_Sensoren[1] = ladeBoxen_Sensoren[1].isHigh();
 
 			// ladeBoxen_Sensoren[2]
 			ladeBoxen_Sensoren[2] = gpio.provisionDigitalInputPin(IOList.ladeBox_Sensoren[2],
@@ -240,6 +242,7 @@ public class IOHandler {
 				}
 			});
 			ladeBoxen_Sensoren[2].setDebounce(10);
+			IOHandler.ladeBoxen_Sensoren[1] = ladeBoxen_Sensoren[1].isHigh();
 
 			// ladeBoxen_SensorTor
 			final GpioPinDigitalInput ladeBoxen_SensorTor = gpio.provisionDigitalInputPin(IOList.ladeBox_SensorTor,
@@ -247,10 +250,11 @@ public class IOHandler {
 			ladeBoxen_SensorTor.addListener(new GpioPinListenerDigital() {
 				@Override
 				public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-					IOHandler.ladeBoxen_SensorTor = event.getState().isHigh();
+					IOHandler.ladeBoxen_SensorTor = event.getState().isLow();
 				}
 			});
-			ladeBoxen_SensorTor.setDebounce(10);
+			ladeBoxen_SensorTor.setDebounce(50);
+			IOHandler.ladeBoxen_SensorTor = ladeBoxen_SensorTor.isLow();
 		}
 
 		// ball_BallEingeworfen
@@ -263,6 +267,7 @@ public class IOHandler {
 			}
 		});
 		ball_BallEingeworfen.setDebounce(10);
+		IOHandler.ball_BallEingeworfen = ball_BallEingeworfen.isHigh();
 
 		// Inputs Ende
 

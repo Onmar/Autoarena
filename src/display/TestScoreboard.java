@@ -12,6 +12,8 @@ import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Timer;
 
+import ablaufsteuerung.ZustaendeBall;
+import ablaufsteuerung.ZustaendeSpiel;
 import master.Globals;
 
 public class TestScoreboard {
@@ -100,6 +102,28 @@ public class TestScoreboard {
 		player2_Color.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
                 Globals.mBotSpieler2 = Colors.values()[player2_Color.getSelectedIndex()];
+            }
+        });
+		
+		final JComboBox<String> gameState = new JComboBox<String>();
+		gameState.setMaximumRowCount(4);
+		gameState.setModel(new DefaultComboBoxModel<String>(new String[] {"SPIEL_AUS", "SPIEL_INIT", "SPIEL_LAEUFT", "SPIEL_FERTIG"}));
+		gameState.setSelectedIndex(0);
+		panel_1.add(gameState);
+		gameState.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Globals.debug_spielZustand = ZustaendeSpiel.values()[gameState.getSelectedIndex()];
+            }
+        });
+		
+		final JComboBox<String> ballState = new JComboBox<String>();
+		ballState.setMaximumRowCount(3);
+		ballState.setModel(new DefaultComboBoxModel<String>(new String[] {"KEIN_BALL", "BALL_EINWURF", "BALL_VORHANDE"}));
+		ballState.setSelectedIndex(0);
+		panel_1.add(ballState);
+		ballState.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Globals.debug_ballZustand = ZustaendeBall.values()[ballState.getSelectedIndex()];
             }
         });
 		

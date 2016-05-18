@@ -40,7 +40,7 @@ public class IOHandlerSim {
 	 * Create the application.
 	 */
 	public IOHandlerSim() {
-		IOHandler.init(false);
+		IOHandler.init(true);
 		initialize();
 	}
 
@@ -70,11 +70,13 @@ public class IOHandlerSim {
 		final JSpinner spieler1_JoystickL = new JSpinner();
 		spieler1_JoystickL.setEnabled(false);
 		spieler1_JoystickL.setToolTipText("spieler1_JoystickL");
+		spieler1_JoystickL.setSize(300, 20);
 		spieler1.add(spieler1_JoystickL);
 
 		final JSpinner spieler1_JoystickR = new JSpinner();
 		spieler1_JoystickR.setEnabled(false);
 		spieler1_JoystickR.setToolTipText("spieler1_JoystickR");
+		spieler1_JoystickR.setSize(300, 20);
 		spieler1.add(spieler1_JoystickR);
 
 		final JPanel spieler2 = new JPanel();
@@ -94,11 +96,13 @@ public class IOHandlerSim {
 		final JSpinner spieler2_JoystickL = new JSpinner();
 		spieler2_JoystickL.setEnabled(false);
 		spieler2_JoystickL.setToolTipText("spieler2_JoystickL");
+		spieler2_JoystickL.setSize(300, 20);
 		spieler2.add(spieler2_JoystickL);
 
 		final JSpinner spieler2_JoystickR = new JSpinner();
 		spieler2_JoystickR.setEnabled(false);
 		spieler2_JoystickR.setToolTipText("spieler2_JoystickR");
+		spieler2_JoystickR.setSize(300, 20);
 		spieler2.add(spieler2_JoystickR);
 
 		final JPanel ladeBoxMot = new JPanel();
@@ -180,6 +184,7 @@ public class IOHandlerSim {
 				spieler1_JoystickR.setValue(IOHandler.spieler1_JoystickR);
 				spieler2_JoystickL.setValue(IOHandler.spieler2_JoystickL);
 				spieler2_JoystickR.setValue(IOHandler.spieler2_JoystickR);
+				System.out.println(IOHandler.spieler1_JoystickL + " " + IOHandler.spieler1_JoystickR + " " + IOHandler.spieler2_JoystickL + " " + IOHandler.spieler2_JoystickR);
 				
 				ladeBoxMot_PosReached.setSelected(IOHandler.positionReached());
 				
@@ -191,7 +196,7 @@ public class IOHandlerSim {
 				ball_Sensor.setSelected(IOHandler.ball_BallEingeworfen);
 			}
 		};
-		Timer update = new Timer(20, updateAction);
+		Timer update = new Timer(100, updateAction);
 		update.start();
 	}
 
