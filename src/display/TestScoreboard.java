@@ -83,9 +83,8 @@ public class TestScoreboard {
 		JPanel panel_1 = new JPanel();
 		frame.getContentPane().add(panel_1, BorderLayout.SOUTH);
 		
-		final JComboBox<String> player1_Color = new JComboBox<String>();
-		player1_Color.setMaximumRowCount(4);
-		player1_Color.setModel(new DefaultComboBoxModel<String>(new String[] {"White", "Red", "Green", "Blue"}));
+		final JComboBox<Colors> player1_Color = new JComboBox<Colors>();
+		player1_Color.setModel(new DefaultComboBoxModel<Colors>(Colors.values()));
 		player1_Color.setSelectedIndex(0);
 		panel_1.add(player1_Color);
 		player1_Color.addActionListener(new java.awt.event.ActionListener() {
@@ -94,10 +93,8 @@ public class TestScoreboard {
             }
         });
 		
-		final JComboBox<String> player2_Color = new JComboBox<String>();
-		player2_Color.setMaximumRowCount(4);
-		player2_Color.setModel(new DefaultComboBoxModel<String>(new String[] {"White", "Red", "Green", "Blue"}));
-		player2_Color.setSelectedIndex(0);
+		final JComboBox<Colors> player2_Color = new JComboBox<Colors>();
+		player2_Color.setModel(new DefaultComboBoxModel<Colors>(Colors.values()));
 		panel_1.add(player2_Color);
 		player2_Color.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -105,10 +102,8 @@ public class TestScoreboard {
             }
         });
 		
-		final JComboBox<String> gameState = new JComboBox<String>();
-		gameState.setMaximumRowCount(4);
-		gameState.setModel(new DefaultComboBoxModel<String>(new String[] {"SPIEL_AUS", "SPIEL_INIT", "SPIEL_LAEUFT", "SPIEL_FERTIG"}));
-		gameState.setSelectedIndex(0);
+		final JComboBox<ZustaendeSpiel> gameState = new JComboBox<ZustaendeSpiel>();
+		gameState.setModel(new DefaultComboBoxModel<ZustaendeSpiel>(ZustaendeSpiel.values()));
 		panel_1.add(gameState);
 		gameState.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -116,9 +111,9 @@ public class TestScoreboard {
             }
         });
 		
-		final JComboBox<String> ballState = new JComboBox<String>();
+		final JComboBox<ZustaendeBall> ballState = new JComboBox<ZustaendeBall>();
 		ballState.setMaximumRowCount(3);
-		ballState.setModel(new DefaultComboBoxModel<String>(new String[] {"KEIN_BALL", "BALL_EINWURF", "BALL_VORHANDE"}));
+		ballState.setModel(new DefaultComboBoxModel<ZustaendeBall>(ZustaendeBall.values()));
 		ballState.setSelectedIndex(0);
 		panel_1.add(ballState);
 		ballState.addActionListener(new java.awt.event.ActionListener() {
@@ -130,27 +125,10 @@ public class TestScoreboard {
 		JPanel panel_2 = new JPanel();
 		frame.getContentPane().add(panel_2, BorderLayout.CENTER);
 		
-		JButton btnStartGame = new JButton("Start Game");
-		panel_2.add(btnStartGame);
-		btnStartGame.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                Globals.spielLaeuft = true;
-            }
-        });
-		
-		JButton btnPauseGame = new JButton("Pause Game");
-		panel_2.add(btnPauseGame);
-		btnPauseGame.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                Globals.spielLaeuft = false;
-            }
-        });
-		
 		JButton btnResetGame = new JButton("Reset Game");
 		panel_2.add(btnResetGame);
 		btnResetGame.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                Globals.spielLaeuft = false;
                 Globals.spielzeit = 0;
             }
         });
@@ -160,7 +138,7 @@ public class TestScoreboard {
 			private long lastCycle = System.currentTimeMillis();
 			
 			public void actionPerformed(ActionEvent event) {
-				if(Globals.spielLaeuft) {
+				if(Globals.debug_spielZustand == ZustaendeSpiel.SPIEL_LAEUFT) {
 					Globals.spielzeit += System.currentTimeMillis() - lastCycle;
 				}
 				lastCycle = System.currentTimeMillis();

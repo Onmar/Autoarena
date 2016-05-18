@@ -97,7 +97,7 @@ public class Scoreboard {
 		} catch (IOException e) {
 			joystickPicture = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 		}
-		
+
 		// Create Window
 		window.setTitle("GUI for Car Arena");
 		window.setBounds(0, 0, width, height);
@@ -202,7 +202,7 @@ public class Scoreboard {
 			gameStart_Notice.setBounds(0, 0, width, height / 3);
 			gameStart_Notice.setHorizontalAlignment(SwingConstants.CENTER);
 			gameStart_Notice.setVerticalAlignment(SwingConstants.CENTER);
-			
+
 			gameStart_JoystickPicture.setIcon(new ImageIcon(joystickPicture));
 			gameStart_JoystickPicture.setBounds(0, height / 3, width, height * 2 / 3);
 			gameStart_JoystickPicture.setHorizontalAlignment(SwingConstants.CENTER);
@@ -229,7 +229,7 @@ public class Scoreboard {
 			noBall_JoystickPicture.setBounds(0, height / 3, width, height * 2 / 3);
 			noBall_JoystickPicture.setHorizontalAlignment(SwingConstants.CENTER);
 			noBall_JoystickPicture.setVerticalAlignment(SwingConstants.CENTER);
-			
+
 			// Add Elements to Pane
 			pane_NoBall.add(noBall_Notice);
 			pane_NoBall.add(noBall_JoystickPicture);
@@ -245,7 +245,7 @@ public class Scoreboard {
 				if (Globals.maxSpielzeit > Globals.spielzeit) {
 					spielzeit_Minutes.setText(String.format("%02d",
 							TimeUnit.MILLISECONDS.toMinutes(Globals.maxSpielzeit - Globals.spielzeit)));
-					if (Globals.spielLaeuft || System.currentTimeMillis() % 1500 > 750) {
+					if (/* Ablaufsteuerung.getGameState() */ Globals.debug_spielZustand == ZustaendeSpiel.SPIEL_LAEUFT || System.currentTimeMillis() % 1500 > 750) {
 						spielzeit_Middle.setText(":");
 					} else {
 						spielzeit_Middle.setText("");
@@ -262,8 +262,9 @@ public class Scoreboard {
 				} else {
 					pane_GameStart.setLocation(width * 2, height * 2);
 				}
-				if (/* Ablaufsteuerung.getBallState() */ Globals.debug_ballZustand == ZustaendeBall.KEIN_BALL
-						&& /* Ablaufsteuerung.getGameState() */ Globals.debug_spielZustand == ZustaendeSpiel.SPIEL_LAEUFT
+				if (((/* Ablaufsteuerung.getBallState() */ Globals.debug_ballZustand == ZustaendeBall.KEIN_BALL
+						&& /* Ablaufsteuerung.getGameState() */ Globals.debug_spielZustand == ZustaendeSpiel.SPIEL_LAEUFT)
+						|| /* Ablaufsteuerung.getGameState() */ Globals.debug_spielZustand == ZustaendeSpiel.SPIEL_FERTIG)
 						&& System.currentTimeMillis() % 10000 < 5000) {
 					pane_NoBall.setLocation(0, 0);
 				} else {

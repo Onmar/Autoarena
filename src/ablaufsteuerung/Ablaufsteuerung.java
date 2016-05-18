@@ -12,7 +12,8 @@ public class Ablaufsteuerung {
 	private static ZustaendeSpiel zustandSpiel = ZustaendeSpiel.SPIEL_AUS;
 	private static ZustaendeBall zustandBall = ZustaendeBall.KEIN_BALL;
 	private static long lastMilis;
-	
+	private static long gameStopTime;
+
 	// IOHandler.ball_BallEingeworfen of last cycle
 	private static boolean lastBallEingeworfen = true;
 
@@ -87,11 +88,13 @@ public class Ablaufsteuerung {
 			laufendesSpiel();
 			if ((Globals.spielzeit > TimeUnit.MINUTES.toMillis(3) || Globals.toreSpieler1 + Globals.toreSpieler2 >= 5)
 					&& zustandBall == ZustaendeBall.KEIN_BALL) {
+				gameStopTime = System.currentTimeMillis();
 				zustandSpiel = ZustaendeSpiel.SPIEL_FERTIG;
 			}
 			break;
 		case SPIEL_FERTIG:
-			if((System.currentTimeMillis() - Globals.ausparkzeit) > Globals.maxAusparkzeit) {
+			if (((System.currentTimeMillis() - Globals.ausparkzeit) > Globals.maxAusparkzeit)
+					|| ((System.currentTimeMillis() - gameStopTime) > Globals.maxWartezeit)) {
 				zustandSpiel = ZustaendeSpiel.EINPARKEN;
 			} else {
 				if (IOHandler.spieler1_NeuerBall && IOHandler.spieler2_NeuerBall) {
